@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Analysis</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .label {
+            color: #666;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: #222;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>AI Transaction Intelligence</h1>
+
+    <div class="card">
+        <div class="label">Transaction</div>
+        <p>{{ message }}</p>
+    </div>
+
+    <div class="card">
+        <div class="label">Amount</div>
+        <div class="value">KSh {{ "{:,.2f}".format(amount) }}</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Category</div>
+        <div class="value">{{ category }}</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Transaction Type</div>
+        <div class="value">{{ transaction_type }}</div>
+    </div>
+
+    <div class="card">
+        <div class="label">Financial Insight</div>
+        <p>{{ insight }}</p>
+    </div>
+
+    <div class="card">
+        <div class="label">Risk / Anomaly Check</div>
+        <p>{{ anomaly }}</p>
+    </div>
+
+    <a class="back" href="/">Analyze Another Transaction</a>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History | Transaction Intelligence</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <div class="brand">
+        <span class="brand-icon">AI</span>
+        <span>Transaction Intelligence</span>
+    </div>
+
+    <nav>
+        <a href="/">Analyzer</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/history">History</a>
+    </nav>
+
+</header>
+
+
+<main class="container">
+
+    <section class="hero">
+        <p class="eyebrow">TRANSACTION RECORDS</p>
+        <h1>Transaction History</h1>
+        <p>
+            Review previously analyzed transactions and their
+            corresponding risk assessments.
+        </p>
+    </section>
+
+
+    <section class="card">
+
+        {% if transactions %}
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Purpose</th>
+                        <th>Location</th>
+                        <th>Risk</th>
+                        <th>Indicators</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for transaction in transactions %}
+
+                    <tr>
+
+                        <td>#{{ transaction.id }}</td>
+
+                        <td>{{ transaction.created_at }}</td>
+
+                        <td>{{ transaction.transaction_type }}</td>
+
+                        <td>{{ transaction.amount }}</td>
+
+                        <td>{{ transaction.purpose }}</td>
+
+                        <td>{{ transaction.location }}</td>
+
+                        <td>
+                            <span class="risk {{ transaction.risk_level|lower }}">
+                                {{ transaction.risk_level }}
+                            </span>
+                        </td>
+
+                        <td>{{ transaction.unusual_indicators }}</td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty">
+            <h2>No transaction history</h2>
+            <p>Analyze your first transaction to create a record.</p>
+            <a class="button-link" href="/">Open Analyzer</a>
+        </div>
+
+        {% endif %}
+
+    </section>
+
+</main>
+
+<footer>
+    <p>AI Transaction Intelligence • Transaction History</p>
+</footer>
+
+</body>
+</html>

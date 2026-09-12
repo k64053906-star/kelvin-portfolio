@@ -1,0 +1,195 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Transaction Dashboard</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+<header>
+
+    <div class="nav-container">
+
+        <div class="brand">
+
+            <span class="brand-icon">AI</span>
+
+            <span>Transaction Intelligence</span>
+
+        </div>
+
+
+        <nav>
+
+            <a href="/">Analyzer</a>
+
+            <a href="/dashboard">Dashboard</a>
+
+            <a href="/history">History</a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <section class="page-title">
+
+        <p class="eyebrow">SYSTEM OVERVIEW</p>
+
+        <h1>Transaction Dashboard</h1>
+
+        <p>Monitor analyzed transactions and risk distribution.</p>
+
+    </section>
+
+
+    <section class="stats-grid">
+
+
+        <div class="stat-card">
+
+            <span>Total Transactions</span>
+
+            <strong>{{ total_transactions }}</strong>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span>Incoming Payments</span>
+
+            <strong>{{ incoming }}</strong>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span>Outgoing Payments</span>
+
+            <strong>{{ outgoing }}</strong>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span>Purchases</span>
+
+            <strong>{{ purchases }}</strong>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span>Cash Withdrawals</span>
+
+            <strong>{{ withdrawals }}</strong>
+
+        </div>
+
+
+    </section>
+
+
+    <section class="card">
+
+        <div class="section-heading">
+
+            <h2>Risk Distribution</h2>
+
+            <p>Current risk levels across analyzed transactions.</p>
+
+        </div>
+
+
+        <div class="risk-grid">
+
+
+            <div class="risk-stat low">
+
+                <span>Low Risk</span>
+
+                <strong>{{ low_risk }}</strong>
+
+            </div>
+
+
+            <div class="risk-stat medium">
+
+                <span>Medium Risk</span>
+
+                <strong>{{ medium_risk }}</strong>
+
+            </div>
+
+
+            <div class="risk-stat high">
+
+                <span>High Risk</span>
+
+                <strong>{{ high_risk }}</strong>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <section class="card">
+
+        <h2>System Capabilities</h2>
+
+        <div class="capability-grid">
+
+            <div>✓ Amount detection</div>
+
+            <div>✓ Currency detection</div>
+
+            <div>✓ Transaction classification</div>
+
+            <div>✓ Purpose identification</div>
+
+            <div>✓ Risk scoring</div>
+
+            <div>✓ Unusual activity detection</div>
+
+            <div>✓ Transaction history</div>
+
+            <div>✓ SQLite database</div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    <p>AI Transaction Intelligence &copy; 2026</p>
+
+</footer>
+
+
+</body>
+
+</html>

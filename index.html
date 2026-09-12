@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Transaction Intelligence</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 30px 8%;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        header p {
+            color: #cbd5e1;
+            margin-top: 8px;
+        }
+
+        .container {
+            width: 84%;
+            max-width: 1100px;
+            margin: 40px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        textarea {
+            width: 100%;
+            height: 140px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 13px 25px;
+            border: none;
+            border-radius: 7px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .feature {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+        }
+
+        .feature h3 {
+            margin-top: 0;
+        }
+
+        .feature p {
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #64748b;
+        }
+
+        @media (max-width: 800px) {
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>AI Transaction Intelligence</h1>
+    <p>Intelligent transaction analysis powered by AI</p>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>Analyze a Transaction</h2>
+
+        <p>
+            Enter a transaction message below and our system
+            will analyze it.
+        </p>
+
+        <form action="/analyze" method="POST">
+
+            <textarea
+                name="message"
+                placeholder="Example: I spent KSh 2,500 on groceries"
+                required
+            ></textarea>
+
+            <br>
+
+            <button type="submit">
+                Analyze Transaction
+            </button>
+
+        </form>
+    </div>
+
+    <div class="features">
+
+        <div class="feature">
+            <h3>Transaction Analysis</h3>
+            <p>
+                Analyze transaction information and identify
+                important financial details.
+            </p>
+        </div>
+
+        <div class="feature">
+            <h3>AI Insights</h3>
+            <p>
+                Generate useful insights from financial
+                transaction data.
+            </p>
+        </div>
+
+        <div class="feature">
+            <h3>Anomaly Detection</h3>
+            <p>
+                Identify unusual transactions that may require
+                further investigation.
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+    AI Transaction Intelligence — Portfolio Project
+</footer>
+
+</body>
+</html>

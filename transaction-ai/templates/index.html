@@ -1,0 +1,187 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Transaction Intelligence</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="brand">
+        <span class="brand-icon">AI</span>
+        <span>Transaction Intelligence</span>
+    </div>
+
+    <nav>
+        <a href="/">Analyzer</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/history">History</a>
+    </nav>
+</header>
+
+
+<main class="container">
+
+    <section class="hero">
+        <div>
+            <p class="eyebrow">FINANCIAL RISK ANALYSIS</p>
+            <h1>Intelligent Transaction Analysis</h1>
+            <p>
+                Analyze transaction information, identify unusual
+                patterns, calculate risk, and receive an explainable
+                recommendation.
+            </p>
+        </div>
+    </section>
+
+
+    <section class="card">
+
+        <div class="section-title">
+            <div>
+                <h2>Analyze a Transaction</h2>
+                <p>Enter the available transaction information below.</p>
+            </div>
+        </div>
+
+        {% if error %}
+            <div class="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form action="/analyze" method="POST">
+
+            <textarea
+                name="message"
+                placeholder="Example:
+Amount: 150000 KES
+Type: Online transfer
+Location: Nairobi
+Time: 2:30 AM
+Account age: 2 months
+Previous transactions: 3
+Purpose: Payment for consulting services"
+                required>{{ message if message else "" }}</textarea>
+
+            <button type="submit">
+                Analyze Transaction
+            </button>
+
+        </form>
+
+    </section>
+
+
+    {% if result %}
+
+    <section class="results">
+
+        <div class="result-header">
+            <div>
+                <p class="eyebrow">ANALYSIS RESULT</p>
+                <h2>Transaction Assessment</h2>
+            </div>
+
+            <span class="risk {{ result.risk_level|lower }}">
+                {{ result.risk_level }} Risk
+            </span>
+        </div>
+
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <span>Transaction Type</span>
+                <strong>{{ result.transaction_type }}</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Amount</span>
+                <strong>{{ result.amount }}</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Purpose</span>
+                <strong>{{ result.purpose }}</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Risk Score</span>
+                <strong>{{ result.risk_score }}</strong>
+            </div>
+
+        </div>
+
+
+        <div class="details-grid">
+
+            <div class="card">
+
+                <h3>Transaction Details</h3>
+
+                <div class="detail">
+                    <span>Location</span>
+                    <strong>{{ result.location }}</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Transaction time</span>
+                    <strong>{{ result.transaction_time }}</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Account age</span>
+                    <strong>{{ result.account_age }}</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Previous transactions</span>
+                    <strong>{{ result.previous_transactions }}</strong>
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Risk Explanation</h3>
+
+                <p class="explanation">
+                    {{ result.risk_explanation }}
+                </p>
+
+                <h3>Unusual Indicators</h3>
+
+                <p>
+                    {{ result.unusual_indicators }}
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="recommendation">
+
+            <h3>Recommendation</h3>
+
+            <p>{{ result.recommendation }}</p>
+
+        </div>
+
+    </section>
+
+    {% endif %}
+
+</main>
+
+<footer>
+    <p>AI Transaction Intelligence • Local financial risk analysis system</p>
+</footer>
+
+</body>
+</html>

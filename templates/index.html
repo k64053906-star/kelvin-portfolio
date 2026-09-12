@@ -1,0 +1,280 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Transaction Intelligence</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+<header>
+
+    <div class="nav-container">
+
+        <div class="brand">
+
+            <span class="brand-icon">AI</span>
+
+            <span>Transaction Intelligence</span>
+
+        </div>
+
+
+        <nav>
+
+            <a href="/">Analyzer</a>
+
+            <a href="/dashboard">Dashboard</a>
+
+            <a href="/history">History</a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <section class="hero">
+
+        <div>
+
+            <p class="eyebrow">INTELLIGENT TRANSACTION ANALYSIS</p>
+
+            <h1>Analyze financial transactions with confidence.</h1>
+
+            <p class="hero-text">
+
+                Enter transaction information and receive structured analysis,
+
+                risk assessment, unusual indicators, and recommended actions.
+
+            </p>
+
+        </div>
+
+    </section>
+
+
+    {% if error %}
+
+    <div class="alert">
+
+        {{ error }}
+
+    </div>
+
+    {% endif %}
+
+
+    <section class="card">
+
+        <div class="section-heading">
+
+            <h2>Transaction Analyzer</h2>
+
+            <p>Provide as much transaction information as available.</p>
+
+        </div>
+
+
+        <form method="POST" action="/analyze">
+
+            <label for="message">Transaction information</label>
+
+            <textarea
+
+                id="message"
+
+                name="message"
+
+                placeholder="Example:
+
+Amount: 150000 KES
+Type: Online transfer
+Location: Nairobi
+Time: 2:30 AM
+Account age: 2 months
+Previous transactions: 3"
+
+                required>{{ message or '' }}</textarea>
+
+
+            <button type="submit">
+
+                Analyze Transaction
+
+            </button>
+
+        </form>
+
+    </section>
+
+
+    {% if result %}
+
+    <section class="results">
+
+        <div class="section-heading">
+
+            <p class="eyebrow">ANALYSIS COMPLETE</p>
+
+            <h2>Transaction Analysis Result</h2>
+
+        </div>
+
+
+        <div class="risk-card {{ result.risk_level|lower }}">
+
+            <div>
+
+                <span class="small-label">RISK LEVEL</span>
+
+                <h2>{{ result.risk_level }}</h2>
+
+            </div>
+
+            <div class="risk-score">
+
+                Score: {{ result.risk_score }}
+
+            </div>
+
+        </div>
+
+
+        <div class="result-grid">
+
+
+            <div class="result-item">
+
+                <span>Transaction Type</span>
+
+                <strong>{{ result.transaction_type }}</strong>
+
+            </div>
+
+
+            <div class="result-item">
+
+                <span>Amount</span>
+
+                <strong>
+
+                    {{ result.amount }}
+
+                    {% if result.currency != "Not detected" %}
+
+                        {{ result.currency }}
+
+                    {% endif %}
+
+                </strong>
+
+            </div>
+
+
+            <div class="result-item">
+
+                <span>Purpose</span>
+
+                <strong>{{ result.purpose }}</strong>
+
+            </div>
+
+
+            <div class="result-item">
+
+                <span>Location</span>
+
+                <strong>{{ result.location }}</strong>
+
+            </div>
+
+
+            <div class="result-item">
+
+                <span>Transaction Time</span>
+
+                <strong>{{ result.transaction_time }}</strong>
+
+            </div>
+
+
+            <div class="result-item">
+
+                <span>Account Age</span>
+
+                <strong>{{ result.account_age }}</strong>
+
+            </div>
+
+
+            <div class="result-item">
+
+                <span>Previous Transactions</span>
+
+                <strong>{{ result.previous_transactions }}</strong>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="analysis-box">
+
+            <h3>Risk Explanation</h3>
+
+            <p>{{ result.risk_explanation }}</p>
+
+        </div>
+
+
+        <div class="analysis-box">
+
+            <h3>Unusual Indicators</h3>
+
+            <p>{{ result.unusual_indicators }}</p>
+
+        </div>
+
+
+        <div class="analysis-box">
+
+            <h3>Recommendation</h3>
+
+            <p>{{ result.recommendation }}</p>
+
+        </div>
+
+
+    </section>
+
+    {% endif %}
+
+
+</main>
+
+
+<footer>
+
+    <p>AI Transaction Intelligence &copy; 2026</p>
+
+</footer>
+
+
+</body>
+
+</html>
