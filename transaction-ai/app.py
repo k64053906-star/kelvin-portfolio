@@ -46,452 +46,193 @@ def init_db():
 # --------------------------------------------------
 
 def analyze_transaction(message):
-
     text = message.lower()
 
-    # -----------------------------
-    # Amount and currency
-    # -----------------------------
+    amount_match = re.search(
+        r"(?:ksh|kes|ksh\.|kes\.)?\s*([\d,]+(?:\.\d+)?)",
+        text,
+        re.IGNORECASE
+    )
 
-    amount = None
-    currency = "Unknown"
+    amount = 0.0
+    if amount_match:
+        amount = float(amount_match.group(1).replace(",", ""))
 
-    currency_patterns = [
-        (r"(?:ksh|kes|ksh\.?)\s*([\d,]+(?:\.\d+)?)", "KES"),
-        (r"([\d,]+(?:\.\d+)?)\s*(?:ksh|kes)", "KES"),
-        (r"\$\s*([\d,]+(?:\.\d+)?)", "USD"),
-        (r"([\d,]+(?:\.\d+)?)\s*usd", "USD"),
-        (r"€\s*([\d,]+(?:\.\d+)?)", "EUR"),
-        (r"([\d,]+(?:\.\d+)?)\s*eur", "EUR"),
-        (r"£\s*([\d,]+(?:\.\d+)?)", "GBP"),
-        (r"([\d,]+(?:\.\d+)?)\s*gbp", "GBP"),
-    ]
-
-    for pattern, curr in currency_patterns:
-        match = re.search(pattern, text)
-
-        if match:
-            try:
-                amount = float(match.group(1).replace(",", ""))
-                currency = curr
-            except ValueError:
-                pass
-
-            break
-
-    # General number fallback
-    if amount is None:
-        numbers = re.findall(r"\b\d[\d,]*(?:\.\d+)?\b", text)
-
-        if numbers:
-            try:
-                amount = float(numbers[0].replace(",", ""))
-            except ValueError:
-                amount = None
-
-    # -----------------------------
-    # Transaction type
-    # -----------------------------
-
-    transaction_type = "Other"
+    currency = "KES" if ("ksh" in text or "kes" in text) else "Unknown"
 
     if any(word in text for word in [
-        "received",
-        "deposit",
-        "incoming",
-        "credited",
-        "salary",
-        "payment received"
+        "received", "receive", "deposit", "deposited",
+        "income", "paid me", "payment received"
     ]):
         transaction_type = "Incoming"
-
     elif any(word in text for word in [
-        "withdraw",
-        "withdrawal",
-        "cash out",
-        "atm"
-    ]):
-        transaction_type = "Cash Withdrawal"
-
-    elif any(word in text for word in [
-        "refund",
-        "refunded",
-        "reversal"
-    ]):
-        transaction_type = "Refund"
-
-    elif any(word in text for word in [
-        "spent",
-        "paid",
-        "purchase",
-        "bought",
-        "payment"
+        "sent", "send", "transfer", "transferred",
+        "paid", "payment to", "withdraw"
     ]):
         transaction_type = "Outgoing"
+    else:
+        transaction_type = "Other"
 
-    # -----------------------------
-    # Purpose
-    # -----------------------------
-
-    purpose = "General transaction"
-
-    purpose_keywords = {
-        "Salary": [
-            "salary",
-            "wages",
-            "payroll",
-            "monthly pay"
-        ],
-
-        "Consulting": [
-            "consulting",
-            "consultancy",
-            "consultant"
-        ],
-
-        "Rent": [
-            "rent",
-            "house rent",
-            "apartment"
-        ],
-
-        "Business": [
-            "business",
-            "business payment",
-            "supplier",
-            "client"
-        ],
-
-        "Goods / Services": [
-            "groceries",
-            "shopping",
-            "purchase",
-            "bought",
-            "goods",
-            "services",
-            "restaurant",
-            "food"
-        ],
-
-        "Education": [
-            "school",
-            "college",
-            "university",
-            "tuition",
-            "fees",
-            "education"
-        ],
-
-        "Medical": [
-            "hospital",
-            "doctor",
-            "medical",
-            "clinic",
-            "medicine",
-            "pharmacy"
-        ]
-    }
-
-    for category, keywords in purpose_keywords.items():
-
-        if any(keyword in text for keyword in keywords):
-            purpose = category
-            break
-
-    # -----------------------------
-    # Location
-    # -----------------------------
-
-    location = "Not specified"
+    if any(word in text for word in [
+        "salary", "wage", "payroll"
+    ]):
+        purpose = "Salary"
+    elif any(word in text for word in [
+        "consulting", "business", "service", "client"
+    ]):
+        purpose = "Business"
+    elif any(word in text for word in [
+        "rent", "house", "landlord"
+    ]):
+        purpose = "Rent"
+    elif any(word in text for word in [
+        "school", "fee", "tuition"
+    ]):
+        purpose = "Education"
+    elif any(word in text for word in [
+        "food", "shopping", "groceries"
+    ]):
+        purpose = "Shopping"
+    elif any(word in text for word in [
+        "sent", "send", "transfer", "transferred",
+        "paid", "recipient"
+    ]):
+        purpose = "Transfer"
+    else:
+        purpose = "General transaction"
 
     locations = [
-        "nairobi",
-        "mombasa",
-        "kisumu",
-        "nakuru",
-        "eldoret",
-        "embu",
-        "kenya",
-        "uganda",
-        "tanzania",
-        "usa",
-        "united states",
-        "london",
-        "uk"
+        "Nairobi", "Mombasa", "Kisumu", "Nakuru",
+        "Embu", "Siakago", "Kampala", "Kigali"
     ]
 
+    location = "Not specified"
     for place in locations:
-
-        if place in text:
-            location = place.title()
+        if place.lower() in text:
+            location = place
             break
-
-    # -----------------------------
-    # Transaction time
-    # -----------------------------
 
     transaction_time = "Not specified"
 
-    if any(word in text for word in [
-        "midnight",
-        "late night",
-        "2am",
-        "3am",
-        "4am",
-        "1am"
+    clock_match = re.search(
+        r"\b(0?[1-9]|1[0-2])(?::[0-5]\d)?\s*(am|pm)\b",
+        text,
+        re.IGNORECASE
+    )
+
+    if clock_match:
+        hour = int(clock_match.group(1))
+        meridiem = clock_match.group(2).lower()
+
+        if meridiem == "am" and hour >= 12:
+            transaction_time = "Late night"
+        elif meridiem == "am" and hour <= 5:
+            transaction_time = "Late night"
+        elif meridiem == "am":
+            transaction_time = "Morning"
+        elif meridiem == "pm" and hour < 5:
+            transaction_time = "Afternoon"
+        else:
+            transaction_time = "Evening"
+    elif any(word in text for word in [
+        "midnight", "late night", "2am", "3am", "4am", "1am"
     ]):
         transaction_time = "Late night"
-
-    elif any(word in text for word in [
-        "morning",
-        "8am",
-        "9am",
-        "10am",
-        "11am"
-    ]):
+    elif "morning" in text:
         transaction_time = "Morning"
-
-    elif any(word in text for word in [
-        "afternoon",
-        "12pm",
-        "1pm",
-        "2pm",
-        "3pm",
-        "4pm"
-    ]):
+    elif "afternoon" in text:
         transaction_time = "Afternoon"
-
-    elif any(word in text for word in [
-        "evening",
-        "5pm",
-        "6pm",
-        "7pm",
-        "8pm",
-        "9pm"
-    ]):
+    elif "evening" in text or "night" in text:
         transaction_time = "Evening"
 
-    # -----------------------------
-    # Account age
-    # -----------------------------
+    account_age_match = re.search(
+        r"account\s+(?:is\s+)?(\d+)\s*(day|days|week|weeks|month|months|year|years)\s*old",
+        text
+    )
 
     account_age = "Not specified"
+    account_age_months = None
 
-    account_match = re.search(
-        r"account\s+(?:is\s+)?(\d+)\s*(day|days|month|months|year|years)\s*old",
-        text
-    )
+    if account_age_match:
+        number = int(account_age_match.group(1))
+        unit = account_age_match.group(2)
 
-    if account_match:
-        account_age = (
-            account_match.group(1)
-            + " "
-            + account_match.group(2)
-        )
+        if "day" in unit:
+            account_age_months = number / 30
+        elif "week" in unit:
+            account_age_months = number / 4
+        elif "year" in unit:
+            account_age_months = number * 12
+        else:
+            account_age_months = number
 
-    # -----------------------------
-    # Previous transactions
-    # -----------------------------
-
-    previous_transactions = "Not specified"
+        account_age = f"{number} {unit}"
 
     previous_match = re.search(
-        r"(\d+)\s+(?:previous|past|prior)\s+transactions",
+        r"(\d+)\s+(?:previous\s+)?transactions",
         text
     )
 
+    previous_transactions = "Not specified"
+    previous_count = None
+
     if previous_match:
-        previous_transactions = previous_match.group(1)
+        previous_count = int(previous_match.group(1))
+        previous_transactions = str(previous_count)
 
-    # -----------------------------
-    # Risk analysis
-    # -----------------------------
-
-    risk_score = 0
+    score = 0
     indicators = []
 
-    # Late-night activity
     if transaction_time == "Late night":
-        risk_score += 2
+        score += 2
         indicators.append("Late-night transaction")
 
-    # New account
-    if account_age != "Not specified":
+    if account_age_months is not None and account_age_months <= 3:
+        score += 2
+        indicators.append("Recently created account")
 
-        age_match = re.search(r"(\d+)", account_age)
+    if previous_count is not None and previous_count <= 5:
+        score += 2
+        indicators.append("Limited transaction history")
 
-        if age_match:
+    if amount >= 100000:
+        score += 3
+        indicators.append("Large transaction amount")
 
-            age_value = int(age_match.group(1))
+    if any(word in text for word in [
+        "new recipient", "unknown recipient",
+        "unfamiliar recipient", "first time recipient"
+    ]):
+        score += 2
+        indicators.append("New or unfamiliar recipient")
 
-            if "day" in account_age and age_value <= 30:
-                risk_score += 3
-                indicators.append("Very new account")
+    if any(word in text for word in [
+        "hacked", "fraud", "scam", "suspicious",
+        "unauthorized", "unknown transfer"
+    ]):
+        score += 4
+        indicators.append("Possible fraud-related wording")
 
-            elif "month" in account_age and age_value <= 3:
-                risk_score += 2
-                indicators.append("Recently created account")
-
-    # Limited history
-    if previous_transactions != "Not specified":
-
-        try:
-            previous_count = int(previous_transactions)
-
-            if previous_count <= 2:
-                risk_score += 2
-                indicators.append("Limited transaction history")
-
-        except ValueError:
-            pass
-
-    # High-risk words
-    high_risk_words = [
-        "anonymous",
-        "unknown sender",
-        "gambling",
-        "crypto",
-        "offshore",
-        "suspicious",
-        "money laundering",
-        "fraud",
-        "stolen"
-    ]
-
-    found_high_risk = []
-
-    for word in high_risk_words:
-
-        if word in text:
-            found_high_risk.append(word)
-
-    if found_high_risk:
-
-        risk_score += 4
-
-        indicators.append(
-            "High-risk terms: " + ", ".join(found_high_risk)
-        )
-
-    # Medium-risk words
-    medium_risk_words = [
-        "third party",
-        "unusual",
-        "large transfer",
-        "multiple transfers",
-        "urgent",
-        "new beneficiary",
-        "unknown beneficiary"
-    ]
-
-    found_medium_risk = []
-
-    for word in medium_risk_words:
-
-        if word in text:
-            found_medium_risk.append(word)
-
-    if found_medium_risk:
-
-        risk_score += 2
-
-        indicators.append(
-            "Unusual transaction terms: "
-            + ", ".join(found_medium_risk)
-        )
-
-    # Large transaction
-    if amount is not None:
-
-        if currency == "KES" and amount >= 100000:
-            risk_score += 3
-            indicators.append("Large transaction amount")
-
-        elif currency == "USD" and amount >= 5000:
-            risk_score += 3
-            indicators.append("Large transaction amount")
-
-        elif currency == "EUR" and amount >= 5000:
-            risk_score += 3
-            indicators.append("Large transaction amount")
-
-        elif currency == "GBP" and amount >= 5000:
-            risk_score += 3
-            indicators.append("Large transaction amount")
-
-    # Large cash withdrawal
-    if transaction_type == "Cash Withdrawal":
-
-        if amount is not None:
-
-            if currency == "KES" and amount >= 50000:
-                risk_score += 3
-                indicators.append("Large cash withdrawal")
-
-            elif currency in ["USD", "EUR", "GBP"] and amount >= 2000:
-                risk_score += 3
-                indicators.append("Large cash withdrawal")
-
-    # -----------------------------
-    # Risk level
-    # -----------------------------
-
-    if risk_score >= 7:
+    if score >= 7:
         risk_level = "High"
-
-    elif risk_score >= 3:
+    elif score >= 3:
         risk_level = "Medium"
-
     else:
         risk_level = "Low"
 
-    # -----------------------------
-    # Risk explanation
-    # -----------------------------
-
     if indicators:
-
-        risk_explanation = (
-            "Risk assessment is based on: "
-            + "; ".join(indicators)
-            + "."
-        )
-
+        risk_explanation = "Risk assessment is based on: " + "; ".join(indicators) + "."
+        unusual_indicators = "; ".join(indicators)
     else:
-
-        risk_explanation = (
-            "No major unusual indicators were detected "
-            "by the local transaction analysis engine."
-        )
-
-    # -----------------------------
-    # Recommendation
-    # -----------------------------
+        risk_explanation = "No major unusual indicators were detected."
+        unusual_indicators = "None"
 
     if risk_level == "High":
-
-        recommendation = (
-            "Review the transaction carefully and verify "
-            "the sender, recipient, amount and transaction context."
-        )
-
+        recommendation = "Review this transaction carefully and confirm that it was authorized."
     elif risk_level == "Medium":
-
-        recommendation = (
-            "Consider reviewing the transaction and checking "
-            "whether the activity is consistent with the account history."
-        )
-
+        recommendation = "Consider reviewing the transaction and checking whether the activity is consistent with the account history."
     else:
-
-        recommendation = (
-            "No immediate unusual activity was detected. "
-            "Continue normal monitoring."
-        )
-
-    # -----------------------------
-    # Return result
-    # -----------------------------
+        recommendation = "The transaction appears relatively normal, but continue monitoring account activity."
 
     return {
         "transaction_type": transaction_type,
@@ -502,10 +243,10 @@ def analyze_transaction(message):
         "transaction_time": transaction_time,
         "account_age": account_age,
         "previous_transactions": previous_transactions,
-        "risk_score": risk_score,
+        "risk_score": score,
         "risk_level": risk_level,
         "risk_explanation": risk_explanation,
-        "unusual_indicators": "; ".join(indicators) if indicators else "None",
+        "unusual_indicators": unusual_indicators,
         "recommendation": recommendation
     }
 
@@ -515,8 +256,11 @@ def analyze_transaction(message):
 # --------------------------------------------------
 
 def save_transaction(message, result):
+    from datetime import datetime
 
     conn = sqlite3.connect(DATABASE)
+
+    created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     conn.execute("""
         INSERT INTO transactions (
@@ -535,9 +279,10 @@ def save_transaction(message, result):
             unusual_indicators,
             recommendation,
             ai_explanation,
-            ai_indicators
+            ai_indicators,
+            created_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         message,
         result.get("transaction_type"),
@@ -554,7 +299,8 @@ def save_transaction(message, result):
         result.get("unusual_indicators"),
         result.get("recommendation"),
         result.get("ai_explanation"),
-        result.get("ai_indicators")
+        result.get("ai_indicators"),
+        created_at
     ))
 
     conn.commit()
@@ -650,8 +396,8 @@ def history():
 
 @app.route("/dashboard")
 def dashboard():
-
     conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
 
     total = conn.execute("""
         SELECT COUNT(*) FROM transactions
@@ -700,6 +446,23 @@ def dashboard():
         WHERE risk_level = 'High'
     """).fetchone()[0]
 
+    recent_transactions = conn.execute("""
+        SELECT
+            id,
+            created_at,
+            transaction_type,
+            amount,
+            purpose,
+            location,
+            transaction_time,
+            risk_score,
+            risk_level,
+            unusual_indicators
+        FROM transactions
+        ORDER BY id DESC
+        LIMIT 10
+    """).fetchall()
+
     conn.close()
 
     stats = {
@@ -715,7 +478,8 @@ def dashboard():
 
     return render_template(
         "dashboard.html",
-        stats=stats
+        stats=stats,
+        recent_transactions=recent_transactions
     )
 
 
