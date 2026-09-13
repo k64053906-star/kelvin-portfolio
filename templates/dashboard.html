@@ -1,195 +1,168 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Transaction Dashboard</title>
-
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
 </head>
-
-
 <body>
 
 <header>
+    <h1>AITransaction Intelligence</h1>
 
-    <div class="nav-container">
-
-        <div class="brand">
-
-            <span class="brand-icon">AI</span>
-
-            <span>Transaction Intelligence</span>
-
-        </div>
-
-
-        <nav>
-
-            <a href="/">Analyzer</a>
-
-            <a href="/dashboard">Dashboard</a>
-
-            <a href="/history">History</a>
-
-        </nav>
-
-    </div>
-
+    <nav>
+        <a href="{{ url_for('analyze') }}">Analyzer</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('history') }}">History</a>
+    </nav>
 </header>
-
 
 <main class="container">
 
-    <section class="page-title">
+    <section class="system-overview">
+        <p class="section-label">SYSTEM OVERVIEW</p>
 
-        <p class="eyebrow">SYSTEM OVERVIEW</p>
+        <h2>Transaction Dashboard</h2>
 
-        <h1>Transaction Dashboard</h1>
-
-        <p>Monitor analyzed transactions and risk distribution.</p>
-
+        <p>
+            Monitor transaction activity and risk classifications generated
+            by the local intelligence engine.
+        </p>
     </section>
-
 
     <section class="stats-grid">
 
+        <div class="stat-card">
+            <h3>Total Transactions</h3>
+            <strong>{{ stats.total }}</strong>
+        </div>
 
         <div class="stat-card">
-
-            <span>Total Transactions</span>
-
-            <strong>{{ total_transactions }}</strong>
-
+            <h3>Incoming</h3>
+            <strong>{{ stats.incoming }}</strong>
         </div>
-
 
         <div class="stat-card">
-
-            <span>Incoming Payments</span>
-
-            <strong>{{ incoming }}</strong>
-
+            <h3>Outgoing</h3>
+            <strong>{{ stats.outgoing }}</strong>
         </div>
-
 
         <div class="stat-card">
-
-            <span>Outgoing Payments</span>
-
-            <strong>{{ outgoing }}</strong>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <span>Purchases</span>
-
-            <strong>{{ purchases }}</strong>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <span>Cash Withdrawals</span>
-
-            <strong>{{ withdrawals }}</strong>
-
-        </div>
-
-
-    </section>
-
-
-    <section class="card">
-
-        <div class="section-heading">
-
-            <h2>Risk Distribution</h2>
-
-            <p>Current risk levels across analyzed transactions.</p>
-
-        </div>
-
-
-        <div class="risk-grid">
-
-
-            <div class="risk-stat low">
-
-                <span>Low Risk</span>
-
-                <strong>{{ low_risk }}</strong>
-
-            </div>
-
-
-            <div class="risk-stat medium">
-
-                <span>Medium Risk</span>
-
-                <strong>{{ medium_risk }}</strong>
-
-            </div>
-
-
-            <div class="risk-stat high">
-
-                <span>High Risk</span>
-
-                <strong>{{ high_risk }}</strong>
-
-            </div>
-
-
+            <h3>Withdrawals</h3>
+            <strong>{{ stats.withdrawals }}</strong>
         </div>
 
     </section>
 
+    <section class="risk-summary">
 
-    <section class="card">
-
-        <h2>System Capabilities</h2>
-
-        <div class="capability-grid">
-
-            <div>✓ Amount detection</div>
-
-            <div>✓ Currency detection</div>
-
-            <div>✓ Transaction classification</div>
-
-            <div>✓ Purpose identification</div>
-
-            <div>✓ Risk scoring</div>
-
-            <div>✓ Unusual activity detection</div>
-
-            <div>✓ Transaction history</div>
-
-            <div>✓ SQLite database</div>
-
+        <div class="risk-card low-risk">
+            <h3>Low Risk</h3>
+            <strong>{{ stats.low_risk }}</strong>
         </div>
+
+        <div class="risk-card medium-risk">
+            <h3>Medium Risk</h3>
+            <strong>{{ stats.medium_risk }}</strong>
+        </div>
+
+        <div class="risk-card high-risk">
+            <h3>High Risk</h3>
+            <strong>{{ stats.high_risk }}</strong>
+        </div>
+
+    </section>
+
+    <section class="recent-transactions">
+
+        <h2>Recent Transactions</h2>
+
+        <p>
+            The latest transactions analyzed by the system.
+        </p>
+
+        {% if recent_transactions %}
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Purpose</th>
+                        <th>Location</th>
+                        <th>Time</th>
+                        <th>Risk Score</th>
+                        <th>Risk Level</th>
+                        <th>Indicators</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for transaction in recent_transactions %}
+                    <tr>
+                        <td>{{ transaction["id"] }}</td>
+
+                        <td>
+                            {{ transaction["created_at"] or "Not recorded" }}
+                        </td>
+
+                        <td>
+                            {{ transaction["transaction_type"] or "Unknown" }}
+                        </td>
+
+                        <td>
+                            {{ transaction["amount"] or "0" }}
+                        </td>
+
+                        <td>
+                            {{ transaction["purpose"] or "Unknown" }}
+                        </td>
+
+                        <td>
+                            {{ transaction["location"] or "Unknown" }}
+                        </td>
+
+                        <td>
+                            {{ transaction["transaction_time"] or "Unknown" }}
+                        </td>
+
+                        <td>
+                            {{ transaction["risk_score"] if transaction["risk_score"] is not none else "Not available" }}
+                        </td>
+
+                        <td>
+                            <span class="risk-level">
+                                {{ transaction["risk_level"] or "Unknown" }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {{ transaction["unusual_indicators"] or "None recorded" }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% else %}
+
+        <p>No transactions have been analyzed yet.</p>
+
+        {% endif %}
 
     </section>
 
 </main>
 
-
 <footer>
-
-    <p>AI Transaction Intelligence &copy; 2026</p>
-
+    AI Transaction Intelligence • Local financial risk analysis system
 </footer>
 
-
 </body>
-
 </html>
+

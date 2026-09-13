@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Owner Dashboard | AI Transaction Intelligence</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<nav class="top-nav">
+
+    <div class="nav-brand">
+
+        <span class="brand-mark">AI</span>
+
+        <div>
+            <strong>Transaction Intelligence</strong>
+            <small>Owner Administration</small>
+        </div>
+
+    </div>
+
+
+    <div class="nav-links">
+
+        <a href="{{ url_for('home') }}">
+            Analyze
+        </a>
+
+        <a href="{{ url_for('dashboard') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('history') }}">
+            History
+        </a>
+
+        <a href="{{ url_for('account') }}">
+            My Account
+        </a>
+
+        <a
+            href="{{ url_for('owner') }}"
+            class="active"
+        >
+            Owner
+        </a>
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="logout-link"
+        >
+            Logout
+        </a>
+
+    </div>
+
+</nav>
+
+
+<main class="page-container">
+
+    <div class="page-header">
+
+        <div>
+
+            <span class="eyebrow">
+                OWNER CONTROL CENTER
+            </span>
+
+            <h1>System Administration</h1>
+
+            <p>
+                Monitor users and overall transaction activity
+                across the private financial risk analysis system.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- SYSTEM STATISTICS -->
+
+    <section class="stats-grid">
+
+        <div class="stat-card">
+
+            <span class="stat-label">
+                Registered Users
+            </span>
+
+            <strong class="stat-number">
+                {{ users|length }}
+            </strong>
+
+            <span class="stat-description">
+                Private accounts
+            </span>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span class="stat-label">
+                Total Transactions
+            </span>
+
+            <strong class="stat-number">
+                {{ total_transactions }}
+            </strong>
+
+            <span class="stat-description">
+                Across the system
+            </span>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span class="stat-label">
+                Access Level
+            </span>
+
+            <strong class="stat-number">
+                OWNER
+            </strong>
+
+            <span class="stat-description">
+                Full administration
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- USERS -->
+
+    <section class="panel">
+
+        <div class="panel-header">
+
+            <div>
+
+                <h2>Registered Users</h2>
+
+                <p>
+                    Accounts currently registered in the system.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% if users %}
+
+        <div class="table-wrapper">
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>User</th>
+
+                        <th>Email</th>
+
+                        <th>Transactions</th>
+
+                        <th>Joined</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for user in users %}
+
+                    <tr>
+
+                        <td>
+                            #{{ user["id"] }}
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+                                {{ user["name"] }}
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+                            {{ user["email"] }}
+                        </td>
+
+
+                        <td>
+
+                            <span class="table-badge">
+                                {{ user["transaction_count"] }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            {{ user["created_at"] }}
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty-state">
+
+            <h3>No users yet</h3>
+
+            <p>
+                Registered accounts will appear here.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- OWNER QUICK ACCESS -->
+
+    <section class="quick-actions">
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <h2>System Access</h2>
+
+                <p>
+                    Quickly access every major area of the application.
+                </p>
+
+            </div>
+
+
+            <div class="action-grid">
+
+
+                <a
+                    href="{{ url_for('home') }}"
+                    class="action-card"
+                >
+
+                    <span class="action-icon">
+                        +
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Analyze Transaction
+                        </h3>
+
+                        <p>
+                            Analyze a new transaction.
+                        </p>
+
+                    </div>
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('dashboard') }}"
+                    class="action-card"
+                >
+
+                    <span class="action-icon">
+                        ▦
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Dashboard
+                        </h3>
+
+                        <p>
+                            View transaction risk statistics.
+                        </p>
+
+                    </div>
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('history') }}"
+                    class="action-card"
+                >
+
+                    <span class="action-icon">
+                        ≡
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            Transaction History
+                        </h3>
+
+                        <p>
+                            Review analyzed transactions.
+                        </p>
+
+                    </div>
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('account') }}"
+                    class="action-card"
+                >
+
+                    <span class="action-icon">
+                        ●
+                    </span>
+
+                    <div>
+
+                        <h3>
+                            My Account
+                        </h3>
+
+                        <p>
+                            View your owner account.
+                        </p>
+
+                    </div>
+
+                </a>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+</body>
+</html>

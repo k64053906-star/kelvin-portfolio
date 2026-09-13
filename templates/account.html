@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Account | AI Transaction Intelligence</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<nav class="top-nav">
+
+    <div class="nav-brand">
+        <span class="brand-mark">AI</span>
+
+        <div>
+            <strong>Transaction Intelligence</strong>
+            <small>Financial Risk Analysis</small>
+        </div>
+    </div>
+
+    <div class="nav-links">
+        <a href="{{ url_for('home') }}">Analyze</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('history') }}">History</a>
+        <a href="{{ url_for('account') }}" class="active">My Account</a>
+
+        {% if session.get("is_admin") %}
+            <a href="{{ url_for('owner') }}">Owner</a>
+        {% endif %}
+
+        <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+    </div>
+
+</nav>
+
+
+<main class="page-container">
+
+    <div class="page-header">
+
+        <div>
+            <span class="eyebrow">ACCOUNT</span>
+
+            <h1>My Account</h1>
+
+            <p>
+                Manage your private account information and
+                view your activity.
+            </p>
+        </div>
+
+    </div>
+
+
+    <section class="account-grid">
+
+        <div class="panel">
+
+            <div class="panel-header">
+                <h2>Account Information</h2>
+            </div>
+
+            <div class="account-details">
+
+                <div class="detail-row">
+                    <span>Name</span>
+                    <strong>{{ user["name"] }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Email</span>
+                    <strong>{{ user["email"] }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Account type</span>
+
+                    {% if user["is_admin"] %}
+                        <strong class="status-admin">
+                            Owner / Administrator
+                        </strong>
+                    {% else %}
+                        <strong>
+                            Private User
+                        </strong>
+                    {% endif %}
+                </div>
+
+                <div class="detail-row">
+                    <span>Member since</span>
+                    <strong>{{ user["created_at"] }}</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <div class="panel-header">
+                <h2>Activity</h2>
+            </div>
+
+            <div class="activity-stat">
+
+                <span class="activity-number">
+                    {{ transaction_count }}
+                </span>
+
+                <span class="activity-label">
+                    Transactions analyzed
+                </span>
+
+            </div>
+
+            <a
+                href="{{ url_for('history') }}"
+                class="secondary-button"
+            >
+                View Transaction History
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <section class="quick-actions">
+
+        <div class="panel">
+
+            <div class="panel-header">
+                <h2>Quick Access</h2>
+                <p>Access the main areas of your account.</p>
+            </div>
+
+            <div class="action-grid">
+
+                <a
+                    href="{{ url_for('home') }}"
+                    class="action-card"
+                >
+                    <span class="action-icon">+</span>
+
+                    <div>
+                        <h3>Analyze Transaction</h3>
+                        <p>
+                            Submit a transaction for risk analysis.
+                        </p>
+                    </div>
+                </a>
+
+
+                <a
+                    href="{{ url_for('dashboard') }}"
+                    class="action-card"
+                >
+                    <span class="action-icon">▦</span>
+
+                    <div>
+                        <h3>Dashboard</h3>
+                        <p>
+                            View your financial risk overview.
+                        </p>
+                    </div>
+                </a>
+
+
+                <a
+                    href="{{ url_for('history') }}"
+                    class="action-card"
+                >
+                    <span class="action-icon">≡</span>
+
+                    <div>
+                        <h3>Transaction History</h3>
+                        <p>
+                            Review previously analyzed transactions.
+                        </p>
+                    </div>
+                </a>
+
+
+                {% if session.get("is_admin") %}
+
+                <a
+                    href="{{ url_for('owner') }}"
+                    class="action-card"
+                >
+                    <span class="action-icon">★</span>
+
+                    <div>
+                        <h3>Owner Dashboard</h3>
+                        <p>
+                            Manage and monitor the entire system.
+                        </p>
+                    </div>
+                </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+</body>
+</html>
