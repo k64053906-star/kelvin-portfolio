@@ -146,3 +146,69 @@ This is a portfolio demonstration project. Its risk scores are based on simplifi
 Kelvin
 
 GitHub: https://github.com/k64053906-star/kelvin-portfolio
+
+---
+
+## Freelance Project Showcase
+
+### Project Overview
+
+AI Transaction Intelligence is a web-based transaction analysis system designed to help users understand financial transaction information and identify potentially unusual activity.
+
+The application demonstrates how Python, Flask, SQLite, and rule-based artificial intelligence can be combined to create a practical business-focused web application.
+
+### Business Problems Addressed
+
+This project demonstrates solutions for:
+
+- Reviewing transaction information
+- Identifying incoming and outgoing transactions
+- Detecting unusually large transactions
+- Identifying late-night transactions
+- Highlighting activity from new accounts
+- Detecting limited transaction history
+- Assigning transaction risk scores
+- Presenting transaction information through dashboards
+- Maintaining a searchable transaction history
+
+### Skills Demonstrated
+
+- Python development
+- Flask web application development
+- HTML and CSS interface development
+- SQLite database management
+- Rule-based AI and decision systems
+- Data extraction from text
+- Risk scoring logic
+- Dashboard development
+- Backend and frontend integration
+- Git and GitHub
+- Cloud deployment
+
+### Potential Freelance Applications
+
+The techniques used in this project can be adapted for:
+
+- Business transaction monitoring systems
+- Expense tracking applications
+- Financial reporting dashboards
+- Customer activity analysis
+- Invoice and payment analysis
+- Business intelligence tools
+- Internal company management systems
+- Custom data-processing applications
+
+### Project Status
+
+The application is deployed online and can be accessed through the live demo:
+
+**Live Demo:** https://kelvin-portfolio-4epd.onrender.com
+
+This project is intended as a portfolio demonstration and is not a certified banking, investment, or fraud-detection system.
+
+### Developer
+
+**Kelvin**
+
+GitHub: https://github.com/k64053906-star/kelvin-portfolio
+
