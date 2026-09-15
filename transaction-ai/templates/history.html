@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>History | Transaction Intelligence</title>
+    <title>History - AI Transaction Intelligence</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
 <header class="navbar">
-
     <div class="brand">
         <span class="brand-icon">AI</span>
         <span>Transaction Intelligence</span>
@@ -21,43 +20,49 @@
         <a href="/dashboard">Dashboard</a>
         <a href="/history">History</a>
     </nav>
-
 </header>
-
 
 <main class="container">
 
     <section class="hero">
-        <p class="eyebrow">TRANSACTION RECORDS</p>
-        <h1>Transaction History</h1>
-        <p>
-            Review previously analyzed transactions and their
-            corresponding risk assessments.
-        </p>
+        <div>
+            <p class="eyebrow">TRANSACTION RECORDS</p>
+            <h1>Transaction History</h1>
+            <p>
+                Review previously analyzed transactions and their
+                risk assessments.
+            </p>
+        </div>
     </section>
-
 
     <section class="card">
 
+        <div class="section-title">
+            <div>
+                <h2>Analysis History</h2>
+                <p>
+                    Transactions stored by the local SQLite database.
+                </p>
+            </div>
+        </div>
+
         {% if transactions %}
 
-        <div class="table-wrapper">
+        <div style="overflow-x:auto;">
 
-            <table>
+            <table style="width:100%; border-collapse:collapse;">
 
                 <thead>
-
                     <tr>
-                        <th>ID</th>
-                        <th>Date</th>
-                        <th>Type</th>
-                        <th>Amount</th>
-                        <th>Purpose</th>
-                        <th>Location</th>
-                        <th>Risk</th>
-                        <th>Indicators</th>
+                        <th style="text-align:left; padding:12px;">Risk</th>
+                        <th style="text-align:left; padding:12px;">Amount</th>
+                        <th style="text-align:left; padding:12px;">Type</th>
+                        <th style="text-align:left; padding:12px;">Purpose</th>
+                        <th style="text-align:left; padding:12px;">Location</th>
+                        <th style="text-align:left; padding:12px;">Time</th>
+                        <th style="text-align:left; padding:12px;">Account Age</th>
+                        <th style="text-align:left; padding:12px;">Previous</th>
                     </tr>
-
                 </thead>
 
                 <tbody>
@@ -66,25 +71,40 @@
 
                     <tr>
 
-                        <td>#{{ transaction.id }}</td>
-
-                        <td>{{ transaction.created_at }}</td>
-
-                        <td>{{ transaction.transaction_type }}</td>
-
-                        <td>{{ transaction.amount }}</td>
-
-                        <td>{{ transaction.purpose }}</td>
-
-                        <td>{{ transaction.location }}</td>
-
-                        <td>
-                            <span class="risk {{ transaction.risk_level|lower }}">
-                                {{ transaction.risk_level }}
-                            </span>
+                        <td style="padding:12px;">
+                            <strong>{{ transaction["risk_level"] }}</strong>
+                            <br>
+                            Score: {{ transaction["risk_score"] }}/10
                         </td>
 
-                        <td>{{ transaction.unusual_indicators }}</td>
+                        <td style="padding:12px;">
+                            {{ transaction["amount"] }}
+                            {{ transaction["currency"] }}
+                        </td>
+
+                        <td style="padding:12px;">
+                            {{ transaction["transaction_type"] }}
+                        </td>
+
+                        <td style="padding:12px;">
+                            {{ transaction["purpose"] }}
+                        </td>
+
+                        <td style="padding:12px;">
+                            {{ transaction["location"] }}
+                        </td>
+
+                        <td style="padding:12px;">
+                            {{ transaction["transaction_time"] }}
+                        </td>
+
+                        <td style="padding:12px;">
+                            {{ transaction["account_age"] }}
+                        </td>
+
+                        <td style="padding:12px;">
+                            {{ transaction["previous_transactions"] }}
+                        </td>
 
                     </tr>
 
@@ -98,10 +118,8 @@
 
         {% else %}
 
-        <div class="empty">
-            <h2>No transaction history</h2>
-            <p>Analyze your first transaction to create a record.</p>
-            <a class="button-link" href="/">Open Analyzer</a>
+        <div class="alert">
+            No transaction history is available yet.
         </div>
 
         {% endif %}
@@ -111,7 +129,7 @@
 </main>
 
 <footer>
-    <p>AI Transaction Intelligence • Transaction History</p>
+    <p>AI Transaction Intelligence • Local financial risk analysis system</p>
 </footer>
 
 </body>

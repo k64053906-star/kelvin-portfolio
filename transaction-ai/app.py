@@ -1,221 +1,203 @@
-from flask import Flask, request, render_template
+﻿from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 import re
-from ai_engine import get_ai_analysis
+from datetime import datetime
 
 app = Flask(__name__)
 
 DATABASE = "transactions.db"
 
 
-# --------------------------------------------------
-# DATABASE
-# --------------------------------------------------
-
-def init_db():
+def get_db():
     conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def ensure_database():
+    conn = get_db()
 
     conn.execute("""
         CREATE TABLE IF NOT EXISTS transactions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            message TEXT NOT NULL,
-            transaction_type TEXT,
+            message TEXT,
             amount REAL,
             currency TEXT,
+            transaction_type TEXT,
             purpose TEXT,
             location TEXT,
             transaction_time TEXT,
             account_age TEXT,
             previous_transactions TEXT,
-            risk_score INTEGER,
             risk_level TEXT,
+            risk_score INTEGER,
             risk_explanation TEXT,
             unusual_indicators TEXT,
             recommendation TEXT,
-            ai_explanation TEXT,
-            ai_indicators TEXT
+            created_at TEXT
         )
     """)
+
+    existing = [row["name"] for row in conn.execute("PRAGMA table_info(transactions)").fetchall()]
+
+    columns = {
+        "currency": "TEXT",
+        "transaction_type": "TEXT",
+        "purpose": "TEXT",
+        "location": "TEXT",
+        "transaction_time": "TEXT",
+        "account_age": "TEXT",
+        "previous_transactions": "TEXT",
+        "risk_level": "TEXT",
+        "risk_score": "INTEGER",
+        "risk_explanation": "TEXT",
+        "unusual_indicators": "TEXT",
+        "recommendation": "TEXT",
+        "created_at": "TEXT"
+    }
+
+    for column, datatype in columns.items():
+        if column not in existing:
+            conn.execute(f"ALTER TABLE transactions ADD COLUMN {column} {datatype}")
 
     conn.commit()
     conn.close()
 
 
-# --------------------------------------------------
-# TRANSACTION ANALYSIS ENGINE
-# --------------------------------------------------
+def extract_value(message, labels):
+    for label in labels:
+        pattern = rf"{label}\s*:\s*([^\n\r]+)"
+        match = re.search(pattern, message, re.IGNORECASE)
+        if match:
+            return match.group(1).strip()
+    return "Not specified"
+
 
 def analyze_transaction(message):
-    text = message.lower()
-
-    amount_match = re.search(
-        r"(?:ksh|kes|ksh\.|kes\.)?\s*([\d,]+(?:\.\d+)?)",
-        text,
-        re.IGNORECASE
-    )
 
     amount = 0.0
-    if amount_match:
-        amount = float(amount_match.group(1).replace(",", ""))
 
-    currency = "KES" if ("ksh" in text or "kes" in text) else "Unknown"
-
-    if any(word in text for word in [
-        "received", "receive", "deposit", "deposited",
-        "income", "paid me", "payment received"
-    ]):
-        transaction_type = "Incoming"
-    elif any(word in text for word in [
-        "sent", "send", "transfer", "transferred",
-        "paid", "payment to", "withdraw"
-    ]):
-        transaction_type = "Outgoing"
-    else:
-        transaction_type = "Other"
-
-    if any(word in text for word in [
-        "salary", "wage", "payroll"
-    ]):
-        purpose = "Salary"
-    elif any(word in text for word in [
-        "consulting", "business", "service", "client"
-    ]):
-        purpose = "Business"
-    elif any(word in text for word in [
-        "rent", "house", "landlord"
-    ]):
-        purpose = "Rent"
-    elif any(word in text for word in [
-        "school", "fee", "tuition"
-    ]):
-        purpose = "Education"
-    elif any(word in text for word in [
-        "food", "shopping", "groceries"
-    ]):
-        purpose = "Shopping"
-    elif any(word in text for word in [
-        "sent", "send", "transfer", "transferred",
-        "paid", "recipient"
-    ]):
-        purpose = "Transfer"
-    else:
-        purpose = "General transaction"
-
-    locations = [
-        "Nairobi", "Mombasa", "Kisumu", "Nakuru",
-        "Embu", "Siakago", "Kampala", "Kigali"
-    ]
-
-    location = "Not specified"
-    for place in locations:
-        if place.lower() in text:
-            location = place
-            break
-
-    transaction_time = "Not specified"
-
-    clock_match = re.search(
-        r"\b(0?[1-9]|1[0-2])(?::[0-5]\d)?\s*(am|pm)\b",
-        text,
+    amount_match = re.search(
+        r"(?:amount|value)\s*:\s*(?:KES|KSh|USD|\$)?\s*([\d,]+(?:\.\d+)?)",
+        message,
         re.IGNORECASE
     )
 
-    if clock_match:
-        hour = int(clock_match.group(1))
-        meridiem = clock_match.group(2).lower()
+    if amount_match:
+        amount = float(amount_match.group(1).replace(",", ""))
+    else:
+        money_match = re.search(
+            r"(?:KES|KSh|USD|\$)\s*([\d,]+(?:\.\d+)?)",
+            message,
+            re.IGNORECASE
+        )
+        if money_match:
+            amount = float(money_match.group(1).replace(",", ""))
 
-        if meridiem == "am" and hour >= 12:
-            transaction_time = "Late night"
-        elif meridiem == "am" and hour <= 5:
-            transaction_time = "Late night"
-        elif meridiem == "am":
-            transaction_time = "Morning"
-        elif meridiem == "pm" and hour < 5:
-            transaction_time = "Afternoon"
-        else:
-            transaction_time = "Evening"
-    elif any(word in text for word in [
-        "midnight", "late night", "2am", "3am", "4am", "1am"
-    ]):
-        transaction_time = "Late night"
-    elif "morning" in text:
-        transaction_time = "Morning"
-    elif "afternoon" in text:
-        transaction_time = "Afternoon"
-    elif "evening" in text or "night" in text:
-        transaction_time = "Evening"
+    currency = extract_value(message, ["Currency"])
 
-    account_age_match = re.search(
-        r"account\s+(?:is\s+)?(\d+)\s*(day|days|week|weeks|month|months|year|years)\s*old",
-        text
+    if currency == "Not specified":
+        if re.search(r"\bKES\b|\bKSh\b", message, re.IGNORECASE):
+            currency = "KES"
+        elif re.search(r"\bUSD\b|\$", message, re.IGNORECASE):
+            currency = "USD"
+
+    transaction_type = extract_value(
+        message,
+        ["Type", "Transaction type", "Transaction Type"]
     )
 
-    account_age = "Not specified"
-    account_age_months = None
+    purpose = extract_value(message, ["Purpose"])
 
-    if account_age_match:
-        number = int(account_age_match.group(1))
-        unit = account_age_match.group(2)
+    location = extract_value(message, ["Location"])
 
-        if "day" in unit:
-            account_age_months = number / 30
-        elif "week" in unit:
-            account_age_months = number / 4
-        elif "year" in unit:
-            account_age_months = number * 12
-        else:
-            account_age_months = number
-
-        account_age = f"{number} {unit}"
-
-    previous_match = re.search(
-        r"(\d+)\s+(?:previous\s+)?transactions",
-        text
+    transaction_time = extract_value(
+        message,
+        ["Time", "Transaction time", "Transaction Time"]
     )
 
-    previous_transactions = "Not specified"
-    previous_count = None
+    account_age = extract_value(
+        message,
+        ["Account age", "Account Age"]
+    )
 
-    if previous_match:
-        previous_count = int(previous_match.group(1))
-        previous_transactions = str(previous_count)
+    previous_transactions = extract_value(
+        message,
+        ["Previous transactions", "Previous Transactions"]
+    )
 
     score = 0
     indicators = []
 
-    if transaction_time == "Late night":
+    # Large transaction
+    if amount >= 100000:
+        score += 2
+        indicators.append("Large transaction amount")
+    elif amount >= 50000:
+        score += 1
+        indicators.append("Moderately large transaction amount")
+
+    # Late-night transaction
+    late_night = False
+
+    time_match = re.search(
+        r"(\d{1,2})(?::(\d{2}))?\s*(AM|PM)",
+        transaction_time,
+        re.IGNORECASE
+    )
+
+    if time_match:
+        hour = int(time_match.group(1))
+        minute = int(time_match.group(2) or 0)
+        period = time_match.group(3).upper()
+
+        if period == "PM" and hour != 12:
+            hour += 12
+        elif period == "AM" and hour == 12:
+            hour = 0
+
+        if hour >= 23 or hour < 5:
+            late_night = True
+
+    if late_night or "late night" in transaction_time.lower():
         score += 2
         indicators.append("Late-night transaction")
 
-    if account_age_months is not None and account_age_months <= 3:
-        score += 2
-        indicators.append("Recently created account")
+    # New account
+    age_match = re.search(r"(\d+)\s*(month|months|year|years)", account_age, re.IGNORECASE)
 
-    if previous_count is not None and previous_count <= 5:
-        score += 2
-        indicators.append("Limited transaction history")
+    if age_match:
+        age_number = int(age_match.group(1))
+        age_unit = age_match.group(2).lower()
 
-    if amount >= 100000:
-        score += 3
-        indicators.append("Large transaction amount")
+        if "month" in age_unit and age_number <= 3:
+            score += 2
+            indicators.append("New account")
+        elif "year" in age_unit and age_number < 1:
+            score += 2
+            indicators.append("New account")
 
-    if any(word in text for word in [
-        "new recipient", "unknown recipient",
-        "unfamiliar recipient", "first time recipient"
-    ]):
-        score += 2
-        indicators.append("New or unfamiliar recipient")
+    # Limited transaction history
+    previous_match = re.search(r"\d+", previous_transactions)
 
-    if any(word in text for word in [
-        "hacked", "fraud", "scam", "suspicious",
-        "unauthorized", "unknown transfer"
-    ]):
-        score += 4
-        indicators.append("Possible fraud-related wording")
+    if previous_match:
+        previous_count = int(previous_match.group())
+
+        if previous_count <= 5:
+            score += 2
+            indicators.append("Limited transaction history")
+
+    # Outgoing transfers get a small baseline risk
+    if transaction_type != "Not specified":
+        if any(word in transaction_type.lower() for word in ["transfer", "withdrawal", "online"]):
+            score += 1
+
+    # Cap score
+    score = min(score, 10)
 
     if score >= 7:
         risk_level = "High"
-    elif score >= 3:
+    elif score >= 4:
         risk_level = "Medium"
     else:
         risk_level = "Low"
@@ -224,102 +206,37 @@ def analyze_transaction(message):
         risk_explanation = "Risk assessment is based on: " + "; ".join(indicators) + "."
         unusual_indicators = "; ".join(indicators)
     else:
-        risk_explanation = "No major unusual indicators were detected."
-        unusual_indicators = "None"
+        risk_explanation = "No major unusual patterns were detected from the available information."
+        unusual_indicators = "None detected"
 
     if risk_level == "High":
-        recommendation = "Review this transaction carefully and confirm that it was authorized."
+        recommendation = "Review the transaction carefully and verify the account activity before approving or completing the transaction."
     elif risk_level == "Medium":
         recommendation = "Consider reviewing the transaction and checking whether the activity is consistent with the account history."
     else:
-        recommendation = "The transaction appears relatively normal, but continue monitoring account activity."
+        recommendation = "Transaction appears relatively normal based on the information provided."
 
     return {
-        "transaction_type": transaction_type,
         "amount": amount,
         "currency": currency,
+        "transaction_type": transaction_type,
         "purpose": purpose,
         "location": location,
         "transaction_time": transaction_time,
         "account_age": account_age,
         "previous_transactions": previous_transactions,
-        "risk_score": score,
         "risk_level": risk_level,
+        "risk_score": score,
         "risk_explanation": risk_explanation,
         "unusual_indicators": unusual_indicators,
         "recommendation": recommendation
     }
 
 
-# --------------------------------------------------
-# SAVE TRANSACTION
-# --------------------------------------------------
-
-def save_transaction(message, result):
-    from datetime import datetime
-
-    conn = sqlite3.connect(DATABASE)
-
-    created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-    conn.execute("""
-        INSERT INTO transactions (
-            message,
-            transaction_type,
-            amount,
-            currency,
-            purpose,
-            location,
-            transaction_time,
-            account_age,
-            previous_transactions,
-            risk_score,
-            risk_level,
-            risk_explanation,
-            unusual_indicators,
-            recommendation,
-            ai_explanation,
-            ai_indicators,
-            created_at
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        message,
-        result.get("transaction_type"),
-        result.get("amount"),
-        result.get("currency"),
-        result.get("purpose"),
-        result.get("location"),
-        result.get("transaction_time"),
-        result.get("account_age"),
-        result.get("previous_transactions"),
-        result.get("risk_score"),
-        result.get("risk_level"),
-        result.get("risk_explanation"),
-        result.get("unusual_indicators"),
-        result.get("recommendation"),
-        result.get("ai_explanation"),
-        result.get("ai_indicators"),
-        created_at
-    ))
-
-    conn.commit()
-    conn.close()
-
-
-# --------------------------------------------------
-# HOME PAGE
-# --------------------------------------------------
-
 @app.route("/")
-def home():
-
+def index():
     return render_template("index.html")
 
-
-# --------------------------------------------------
-# ANALYZE TRANSACTION
-# --------------------------------------------------
 
 @app.route("/analyze", methods=["POST"])
 def analyze():
@@ -327,37 +244,54 @@ def analyze():
     message = request.form.get("message", "").strip()
 
     if not message:
-
         return render_template(
             "index.html",
-            error="Please enter a transaction."
+            error="Please enter transaction information."
         )
 
-    # Local rule-based analysis
     result = analyze_transaction(message)
 
-    # AI analysis
-    ai_result = get_ai_analysis(message)
+    conn = get_db()
 
-    # Use AI purpose when local engine cannot identify one
-    if (
-        result.get("purpose") == "General transaction"
-        and ai_result.get("purpose")
-    ):
-        result["purpose"] = ai_result["purpose"]
+    conn.execute("""
+        INSERT INTO transactions (
+            message,
+            amount,
+            currency,
+            transaction_type,
+            purpose,
+            location,
+            transaction_time,
+            account_age,
+            previous_transactions,
+            risk_level,
+            risk_score,
+            risk_explanation,
+            unusual_indicators,
+            recommendation,
+            created_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        message,
+        result["amount"],
+        result["currency"],
+        result["transaction_type"],
+        result["purpose"],
+        result["location"],
+        result["transaction_time"],
+        result["account_age"],
+        result["previous_transactions"],
+        result["risk_level"],
+        result["risk_score"],
+        result["risk_explanation"],
+        result["unusual_indicators"],
+        result["recommendation"],
+        datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    ))
 
-    result["ai_explanation"] = ai_result.get(
-        "ai_explanation",
-        "AI analysis unavailable."
-    )
-
-    result["ai_indicators"] = ai_result.get(
-        "ai_indicators",
-        "None"
-    )
-
-    # Save to database
-    save_transaction(message, result)
+    conn.commit()
+    conn.close()
 
     return render_template(
         "index.html",
@@ -366,15 +300,71 @@ def analyze():
     )
 
 
-# --------------------------------------------------
-# HISTORY
-# --------------------------------------------------
+@app.route("/dashboard")
+def dashboard():
+
+    conn = get_db()
+
+    transactions = conn.execute("""
+        SELECT *
+        FROM transactions
+        ORDER BY id DESC
+    """).fetchall()
+
+    total = len(transactions)
+
+    incoming = sum(
+        1 for t in transactions
+        if t["transaction_type"]
+        and "incoming" in t["transaction_type"].lower()
+    )
+
+    outgoing = sum(
+        1 for t in transactions
+        if t["transaction_type"]
+        and "outgoing" in t["transaction_type"].lower()
+    )
+
+    withdrawals = sum(
+        1 for t in transactions
+        if t["transaction_type"]
+        and "withdraw" in t["transaction_type"].lower()
+    )
+
+    high_risk = sum(
+        1 for t in transactions
+        if t["risk_level"] == "High"
+    )
+
+    medium_risk = sum(
+        1 for t in transactions
+        if t["risk_level"] == "Medium"
+    )
+
+    low_risk = sum(
+        1 for t in transactions
+        if t["risk_level"] == "Low"
+    )
+
+    conn.close()
+
+    return render_template(
+        "dashboard.html",
+        transactions=transactions,
+        total=total,
+        incoming=incoming,
+        outgoing=outgoing,
+        withdrawals=withdrawals,
+        high_risk=high_risk,
+        medium_risk=medium_risk,
+        low_risk=low_risk
+    )
+
 
 @app.route("/history")
 def history():
 
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
+    conn = get_db()
 
     transactions = conn.execute("""
         SELECT *
@@ -390,107 +380,6 @@ def history():
     )
 
 
-# --------------------------------------------------
-# DASHBOARD
-# --------------------------------------------------
-
-@app.route("/dashboard")
-def dashboard():
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
-
-    total = conn.execute("""
-        SELECT COUNT(*) FROM transactions
-    """).fetchone()[0]
-
-    incoming = conn.execute("""
-        SELECT COUNT(*)
-        FROM transactions
-        WHERE transaction_type = 'Incoming'
-    """).fetchone()[0]
-
-    outgoing = conn.execute("""
-        SELECT COUNT(*)
-        FROM transactions
-        WHERE transaction_type = 'Outgoing'
-    """).fetchone()[0]
-
-    purchases = conn.execute("""
-        SELECT COUNT(*)
-        FROM transactions
-        WHERE transaction_type = 'Outgoing'
-        AND purpose = 'Goods / Services'
-    """).fetchone()[0]
-
-    withdrawals = conn.execute("""
-        SELECT COUNT(*)
-        FROM transactions
-        WHERE transaction_type = 'Cash Withdrawal'
-    """).fetchone()[0]
-
-    low_risk = conn.execute("""
-        SELECT COUNT(*)
-        FROM transactions
-        WHERE risk_level = 'Low'
-    """).fetchone()[0]
-
-    medium_risk = conn.execute("""
-        SELECT COUNT(*)
-        FROM transactions
-        WHERE risk_level = 'Medium'
-    """).fetchone()[0]
-
-    high_risk = conn.execute("""
-        SELECT COUNT(*)
-        FROM transactions
-        WHERE risk_level = 'High'
-    """).fetchone()[0]
-
-    recent_transactions = conn.execute("""
-        SELECT
-            id,
-            created_at,
-            transaction_type,
-            amount,
-            purpose,
-            location,
-            transaction_time,
-            risk_score,
-            risk_level,
-            unusual_indicators
-        FROM transactions
-        ORDER BY id DESC
-        LIMIT 10
-    """).fetchall()
-
-    conn.close()
-
-    stats = {
-        "total": total,
-        "incoming": incoming,
-        "outgoing": outgoing,
-        "purchases": purchases,
-        "withdrawals": withdrawals,
-        "low_risk": low_risk,
-        "medium_risk": medium_risk,
-        "high_risk": high_risk
-    }
-
-    return render_template(
-        "dashboard.html",
-        stats=stats,
-        recent_transactions=recent_transactions
-    )
-
-
-# --------------------------------------------------
-# START APPLICATION
-# --------------------------------------------------
-
 if __name__ == "__main__":
-
-    init_db()
-
-    app.run(
-        debug=True
-    )
+    ensure_database()
+    app.run(debug=True)

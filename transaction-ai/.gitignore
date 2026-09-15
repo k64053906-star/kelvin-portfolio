@@ -1,6 +1,8 @@
-project-code.txt
-__pycache__/
+﻿__pycache__/
 *.pyc
 .env
+.venv/
+venv/
+.vscode/
 transactions.db
 transactions_backup.db
