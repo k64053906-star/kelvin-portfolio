@@ -1,149 +1,148 @@
 ﻿# AI Transaction Intelligence
 
-A web-based financial transaction analysis application that evaluates transaction information, identifies unusual activity, calculates risk scores, and provides explainable recommendations.
+A local financial transaction analysis system built with Python and Flask.
+
+The application analyzes transaction information, detects unusual activity, calculates risk scores, and provides explainable recommendations.
 
 ## Live Demo
 
-[Open AI Transaction Intelligence](https://kelvin-portfolio-4epd.onrender.com)
+https://kelvin-portfolio-4epd.onrender.com
 
 ## Project Overview
 
-AI Transaction Intelligence is a Flask-powered web application designed to demonstrate how transaction data can be analyzed using rule-based risk assessment.
+AI Transaction Intelligence is a portfolio project demonstrating how a web application can process transaction information and identify potentially unusual financial activity using a local rule-based risk-analysis engine.
 
-The application allows users to enter transaction details and receive an assessment based on factors such as transaction amount, transaction type, account age, transaction time, location, and previous transaction history.
+The system does not require a paid AI API or an API key.
 
-## Key Features
+## Features
 
-- Transaction amount detection
+- Transaction amount and currency detection
 - Transaction type classification
 - Transaction purpose identification
-- Local rule-based risk scoring
-- Unusual transaction activity detection
+- Location and transaction-time extraction
+- Account age and transaction-history analysis
+- Risk scoring from 0 to 10
+- Low, Medium, and High risk classifications
+- Unusual activity detection
 - Explainable risk indicators
-- Transaction history
-- Dashboard with transaction summaries
-- SQLite database integration
-- Responsive web interface
-- Online deployment with Render
-
-## Risk Analysis
-
-The application evaluates transaction information using a local analysis engine.
-
-Risk indicators may include:
-
-- Large transaction amounts
-- Late-night transactions
-- Recently created accounts
-- Limited transaction history
-- Other unusual transaction patterns
-
-The system generates a risk score and a recommendation to help users review potentially unusual transactions.
-
-**Note:** This is a portfolio demonstration and not a banking security system. Risk scores are indicators for review and do not prove that a transaction is fraudulent.
+- Actionable transaction recommendations
+- Transaction storage using SQLite
+- Dashboard with transaction statistics
+- Transaction history page
+- Flask web interface
+- Responsive website layout
 
 ## Technologies Used
 
 - Python
 - Flask
+- SQLite
 - HTML5
 - CSS3
-- SQLite
+- Regular expressions
 - Git and GitHub
-- Gunicorn
-- Render
+- Render deployment
 
-## Application Pages
+## Risk Analysis
 
-### Analyzer
+The local risk engine evaluates available transaction information, including:
 
-Enter transaction information and receive a risk assessment, risk score, explanation, and recommendation.
+- Transaction amount
+- Transaction time
+- Account age
+- Previous transaction count
+- Transaction type
 
-### Dashboard
+The system produces a risk score, a risk classification, detected indicators, and a recommendation.
 
-View transaction summaries and an overview of analyzed transactions.
+### Example
 
-### History
+Input:
 
-Review previously analyzed transactions.
+Amount: 150000 KES  
+Type: Online transfer  
+Location: Nairobi  
+Time: 2:30 AM  
+Account age: 2 months  
+Previous transactions: 3  
+Purpose: Payment for consulting services
 
-## Skills Demonstrated
+Example result:
 
-- Python development
-- Flask web application development
-- Frontend development
-- Database integration
-- Rule-based data analysis
-- Risk assessment logic
-- Problem solving
-- Git version control
-- Web application deployment
+- Risk level: High Risk
+- Risk score: 9/10
+- Detected indicators: Large transaction amount, late-night transaction, new account, and limited transaction history
 
-## Run the Project Locally
+## Project Structure
 
-### 1. Clone the repository
+transaction-ai/
 
-`ash
+├── app.py  
+├── ai_engine.py  
+├── requirements.txt  
+├── render.yaml  
+├── .gitignore  
+├── transactions.db  
+├── templates/  
+│   ├── index.html  
+│   ├── dashboard.html  
+│   └── history.html  
+└── static/  
+    └── style.css
+
+## Running Locally
+
+Clone the repository:
+
 git clone https://github.com/k64053906-star/kelvin-portfolio.git
-`
 
-### 2. Open the project folder
+Open the project directory:
 
-`ash
 cd kelvin-portfolio/transaction-ai
-`
 
-### 3. Install dependencies
+Install dependencies:
 
-`ash
 pip install -r requirements.txt
-`
 
-### 4. Start the application
+Run the application:
 
-`ash
 python app.py
-`
 
-### 5. Open the application
-
-Visit:
+Open the local application:
 
 http://127.0.0.1:5000
 
 ## Deployment
 
-The application is deployed using Render.
+The application is configured for deployment on Render using Gunicorn.
 
-The project uses Gunicorn as its production web server.
+Build command:
 
-## Project Structure
+pip install -r requirements.txt
 
-`	ext
-transaction-ai/
-├── app.py
-├── ai_engine.py
-├── requirements.txt
-├── templates/
-├── static/
-└── README.md
-`
+Start command:
 
-## Future Improvements
+gunicorn app:app
 
-- CSV transaction file upload
-- Transaction trend visualizations
-- Advanced anomaly detection
-- Improved transaction categorization
-- User authentication
-- More detailed financial reports
+## Portfolio Purpose
 
-## Developer
+This project demonstrates practical skills in:
+
+- Python development
+- Flask web development
+- Database integration
+- Risk-analysis logic
+- Data processing
+- Explainable system design
+- Git version control
+- Cloud deployment
+
+## Disclaimer
+
+This is a portfolio demonstration project. Its risk scores are based on simplified rules and should not be treated as professional financial, banking, or fraud-detection advice.
+
+## Author
 
 Kelvin
 
-GitHub: https://github.com/k64053906-star
-
-## License
-
-This project is intended for portfolio and educational demonstration purposes.
+GitHub: https://github.com/k64053906-star/kelvin-portfolio
