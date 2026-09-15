@@ -1,0 +1,6 @@
+project-code.txt
+__pycache__/
+*.pyc
+.env
+transactions.db
+transactions_backup.db
