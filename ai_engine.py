@@ -219,8 +219,7 @@ def get_ai_analysis(message):
     # --------------------------------------------------
 
     account_age_match = re.search(
-        r"account\s+(?:is\s+)?(\d+)\s*(day|days|week|weeks|month|months|year|years)"
-        r"\s*(?:old|age)?",
+        r"account\s*(?:age)?\s*:?\s*(?:is\s+)?(\d+)\s*(day|days|week|weeks|month|months|year|years)",
         text
     )
 
@@ -247,9 +246,15 @@ def get_ai_analysis(message):
     # --------------------------------------------------
 
     previous_match = re.search(
-        r"(?:only\s+)?(\d+)\s+previous\s+transactions?",
+        r"previous\s+transactions?\s*:?\s*(\d+)",
         text
     )
+
+    if not previous_match:
+        previous_match = re.search(
+            r"(?:only\s+)?(\d+)\s+previous\s+transactions?",
+            text
+        )
 
     if previous_match:
         previous_count = int(previous_match.group(1))
@@ -328,3 +333,4 @@ def get_ai_analysis(message):
         "ai_explanation": explanation,
         "ai_indicators": indicators_text
     }
+

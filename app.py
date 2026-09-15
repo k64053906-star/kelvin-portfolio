@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+﻿from flask import Flask, request, render_template
 import sqlite3
 import re
 from ai_engine import get_ai_analysis
@@ -146,7 +146,7 @@ def analyze_transaction(message):
         transaction_time = "Evening"
 
     account_age_match = re.search(
-        r"account\s+(?:is\s+)?(\d+)\s*(day|days|week|weeks|month|months|year|years)\s*old",
+        r"account\s*(?:age)?\s*:?\s*(?:is\s+)?(\d+)\s*(day|days|week|weeks|month|months|year|years)(?:\s*old)?",
         text
     )
 
@@ -169,7 +169,7 @@ def analyze_transaction(message):
         account_age = f"{number} {unit}"
 
     previous_match = re.search(
-        r"(\d+)\s+(?:previous\s+)?transactions",
+        r"previous\s+transactions?\s*:?\s*(\d+)",
         text
     )
 

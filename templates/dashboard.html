@@ -9,13 +9,18 @@
 <body>
 
 <header>
-    <h1>AITransaction Intelligence</h1>
+    <div class="header-content">
+        <div>
+            <h1>AITransaction Intelligence</h1>
+            <p class="header-subtitle">Local financial risk analysis system</p>
+        </div>
 
-    <nav>
-        <a href="{{ url_for('analyze') }}">Analyzer</a>
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('history') }}">History</a>
-    </nav>
+        <nav>
+            <a href="{{ url_for('analyze') }}">Analyzer</a>
+            <a class="active" href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('history') }}">History</a>
+        </nav>
+    </div>
 </header>
 
 <main class="container">
@@ -34,23 +39,27 @@
     <section class="stats-grid">
 
         <div class="stat-card">
-            <h3>Total Transactions</h3>
+            <p class="stat-label">TOTAL TRANSACTIONS</p>
             <strong>{{ stats.total }}</strong>
+            <span class="stat-description">All analyzed records</span>
         </div>
 
         <div class="stat-card">
-            <h3>Incoming</h3>
+            <p class="stat-label">INCOMING</p>
             <strong>{{ stats.incoming }}</strong>
+            <span class="stat-description">Money received</span>
         </div>
 
         <div class="stat-card">
-            <h3>Outgoing</h3>
+            <p class="stat-label">OUTGOING</p>
             <strong>{{ stats.outgoing }}</strong>
+            <span class="stat-description">Money sent</span>
         </div>
 
         <div class="stat-card">
-            <h3>Withdrawals</h3>
+            <p class="stat-label">WITHDRAWALS</p>
             <strong>{{ stats.withdrawals }}</strong>
+            <span class="stat-description">Cash withdrawals</span>
         </div>
 
     </section>
@@ -58,29 +67,44 @@
     <section class="risk-summary">
 
         <div class="risk-card low-risk">
-            <h3>Low Risk</h3>
-            <strong>{{ stats.low_risk }}</strong>
+            <span class="risk-icon">✓</span>
+            <div>
+                <p>LOW RISK</p>
+                <strong>{{ stats.low_risk }}</strong>
+            </div>
         </div>
 
         <div class="risk-card medium-risk">
-            <h3>Medium Risk</h3>
-            <strong>{{ stats.medium_risk }}</strong>
+            <span class="risk-icon">!</span>
+            <div>
+                <p>MEDIUM RISK</p>
+                <strong>{{ stats.medium_risk }}</strong>
+            </div>
         </div>
 
         <div class="risk-card high-risk">
-            <h3>High Risk</h3>
-            <strong>{{ stats.high_risk }}</strong>
+            <span class="risk-icon">⚠</span>
+            <div>
+                <p>HIGH RISK</p>
+                <strong>{{ stats.high_risk }}</strong>
+            </div>
         </div>
 
     </section>
 
     <section class="recent-transactions">
 
-        <h2>Recent Transactions</h2>
+        <div class="section-heading">
+            <div>
+                <p class="section-label">ACTIVITY MONITOR</p>
+                <h2>Recent Transactions</h2>
+                <p>The latest transactions analyzed by the system.</p>
+            </div>
 
-        <p>
-            The latest transactions analyzed by the system.
-        </p>
+            <a class="secondary-button" href="{{ url_for('analyze') }}">
+                Analyze New Transaction
+            </a>
+        </div>
 
         {% if recent_transactions %}
 
@@ -104,7 +128,7 @@
                 <tbody>
                     {% for transaction in recent_transactions %}
                     <tr>
-                        <td>{{ transaction["id"] }}</td>
+                        <td>#{{ transaction["id"] }}</td>
 
                         <td>
                             {{ transaction["created_at"] or "Not recorded" }}
@@ -114,7 +138,7 @@
                             {{ transaction["transaction_type"] or "Unknown" }}
                         </td>
 
-                        <td>
+                        <td class="amount-cell">
                             {{ transaction["amount"] or "0" }}
                         </td>
 
@@ -130,17 +154,17 @@
                             {{ transaction["transaction_time"] or "Unknown" }}
                         </td>
 
-                        <td>
-                            {{ transaction["risk_score"] if transaction["risk_score"] is not none else "Not available" }}
+                        <td class="score-cell">
+                            {{ transaction["risk_score"] if transaction["risk_score"] is not none else "N/A" }}
                         </td>
 
                         <td>
-                            <span class="risk-level">
+                            <span class="risk-level risk-{{ (transaction['risk_level'] or 'unknown')|lower }}">
                                 {{ transaction["risk_level"] or "Unknown" }}
                             </span>
                         </td>
 
-                        <td>
+                        <td class="indicators-cell">
                             {{ transaction["unusual_indicators"] or "None recorded" }}
                         </td>
                     </tr>
@@ -151,7 +175,13 @@
 
         {% else %}
 
-        <p>No transactions have been analyzed yet.</p>
+        <div class="empty-state">
+            <h3>No transactions yet</h3>
+            <p>No transactions have been analyzed yet.</p>
+            <a class="primary-button" href="{{ url_for('analyze') }}">
+                Analyze Your First Transaction
+            </a>
+        </div>
 
         {% endif %}
 
