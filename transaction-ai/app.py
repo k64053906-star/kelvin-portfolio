@@ -238,7 +238,11 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/analyzer")`r`ndef analyzer():`r`n    return render_template("analyzer.html")`r`n`r`n@app.route("/analyze", methods=["POST"])
+@app.route("/analyzer")
+def analyzer():
+    return render_template("analyzer.html")
+
+@app.route("/analyze", methods=["POST"])
 def analyze():
 
     message = request.form.get("message", "").strip()
@@ -385,6 +389,7 @@ ensure_database()
 if __name__ == "__main__":
     ensure_database()
     app.run(debug=True)
+
 
 
 
