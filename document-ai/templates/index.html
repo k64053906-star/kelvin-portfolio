@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Business Document Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header>
+    <div class="nav">
+        <div class="brand">AI Document Assistant</div>
+        <a href="/">Analyzer</a>
+        <a href="#features">Features</a>
+    </div>
+</header>
+
+<main>
+
+<section class="hero">
+    <div>
+        <p class="tag">AI • PYTHON • DOCUMENT INTELLIGENCE</p>
+        <h1>Understand your business documents faster.</h1>
+        <p class="subtitle">
+            Upload a document, generate a summary, extract key information,
+            and ask questions about its contents.
+        </p>
+    </div>
+</section>
+
+<section class="workspace">
+
+    <div class="card">
+        <h2>Analyze a Document</h2>
+        <p class="muted">Upload a PDF or TXT business document.</p>
+
+        <form action="/analyze" method="POST" enctype="multipart/form-data">
+
+            <label>Document</label>
+            <input type="file" name="document" accept=".pdf,.txt" required>
+
+            <label>Ask a Question</label>
+            <textarea
+                name="question"
+                placeholder="Example: What is the main purpose of this document?"
+            >{{ question or "" }}</textarea>
+
+            <button type="submit">Analyze Document</button>
+
+        </form>
+    </div>
+
+    {% if document_name %}
+
+    <div class="card result">
+        <div class="result-header">
+            <div>
+                <p class="tag">DOCUMENT ANALYSIS</p>
+                <h2>{{ document_name }}</h2>
+            </div>
+            <span class="status">Analyzed</span>
+        </div>
+
+        <h3>Summary</h3>
+        <p>{{ summary }}</p>
+
+        <h3>Key Points</h3>
+
+        {% if key_points %}
+        <ul>
+            {% for point in key_points %}
+            <li>{{ point }}</li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>{{ summary }}</p>
+        {% endif %}
+
+        {% if answer %}
+        <div class="answer">
+            <h3>Question Answer</h3>
+            <p><strong>Question:</strong> {{ question }}</p>
+            <p>{{ answer }}</p>
+        </div>
+        {% endif %}
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+<section id="features" class="features">
+
+    <div>
+        <h3>Document Upload</h3>
+        <p>Process PDF and TXT business documents through a simple web interface.</p>
+    </div>
+
+    <div>
+        <h3>Smart Summary</h3>
+        <p>Turn lengthy document content into a concise overview.</p>
+    </div>
+
+    <div>
+        <h3>Key Information</h3>
+        <p>Identify important sentences and information from uploaded documents.</p>
+    </div>
+
+    <div>
+        <h3>Document Questions</h3>
+        <p>Ask questions and retrieve relevant information from the document.</p>
+    </div>
+
+</section>
+
+</main>
+
+<footer>
+    AI Business Document Assistant • Python & Flask Portfolio Project
+</footer>
+
+</body>
+</html>

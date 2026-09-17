@@ -1,0 +1,11 @@
+﻿This is a sample business document for testing the AI Business Document Assistant.
+
+The purpose of this document is to demonstrate how a business can organize information, improve customer service, and monitor operational performance.
+
+The company plans to improve its digital services during the next quarter. The main objectives are to increase customer satisfaction, reduce response times, and improve internal reporting.
+
+The operations team will review customer feedback every month. Management will use the collected information to identify areas that require improvement.
+
+The project budget is allocated to software development, employee training, customer support, and digital marketing.
+
+The expected result is a more efficient business process and better access to useful information for decision making.
