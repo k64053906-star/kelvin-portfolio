@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Customer Support Assistant</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header>
+    <div class="nav">
+        <div class="brand">SupportAI</div>
+        <div class="badge">AI • PYTHON • AUTOMATION</div>
+    </div>
+</header>
+
+<main>
+    <section class="hero">
+        <p class="eyebrow">AI CUSTOMER SUPPORT ASSISTANT</p>
+        <h1>Respond to customer questions faster.</h1>
+        <p class="subtitle">
+            Analyze customer messages, detect their intent, identify sentiment,
+            and generate a relevant support response.
+        </p>
+    </section>
+
+    <section class="workspace">
+        <div class="card">
+            <h2>Customer Message</h2>
+            <p class="muted">Enter a customer question or support request.</p>
+
+            <form method="POST" action="/support">
+                <textarea name="message" placeholder="Example: I have a problem with my delivery. When will my order arrive?">{{ message or "" }}</textarea>
+                <button type="submit">Analyze Customer Message</button>
+            </form>
+        </div>
+
+        {% if answer %}
+        <div class="card result">
+            <div class="result-header">
+                <div>
+                    <p class="eyebrow">SUPPORT ANALYSIS</p>
+                    <h2>Response Generated</h2>
+                </div>
+                <span class="status">{{ confidence }} Confidence</span>
+            </div>
+
+            <div class="response-box">
+                <h3>AI Response</h3>
+                <p>{{ answer }}</p>
+            </div>
+
+            <div class="details">
+                <div>
+                    <span>Intent</span>
+                    <strong>{{ category }}</strong>
+                </div>
+                <div>
+                    <span>Confidence</span>
+                    <strong>{{ confidence }}</strong>
+                </div>
+                <div>
+                    <span>Sentiment</span>
+                    <strong>{{ sentiment }}</strong>
+                </div>
+            </div>
+
+            <div class="message-preview">
+                <span>Customer message</span>
+                <p>{{ message }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </section>
+
+    <section class="features">
+        <div class="feature">
+            <span>01</span>
+            <h3>Intent Detection</h3>
+            <p>Identify common customer requests such as delivery, payment, refunds, accounts, and products.</p>
+        </div>
+
+        <div class="feature">
+            <span>02</span>
+            <h3>Smart Responses</h3>
+            <p>Generate relevant responses from a structured customer-support knowledge base.</p>
+        </div>
+
+        <div class="feature">
+            <span>03</span>
+            <h3>Sentiment Analysis</h3>
+            <p>Detect positive, neutral, and attention-needed customer messages.</p>
+        </div>
+    </section>
+</main>
+
+<footer>
+    AI Customer Support Assistant • Python & Flask Portfolio Project
+</footer>
+
+</body>
+</html>
