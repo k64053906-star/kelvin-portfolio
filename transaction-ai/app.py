@@ -1,7 +1,8 @@
-﻿from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 import re
 from datetime import datetime
+from ai_engine import get_ai_analysis
 
 app = Flask(__name__)
 
@@ -108,6 +109,10 @@ def analyze_transaction(message):
     )
 
     purpose = extract_value(message, ["Purpose"])
+
+    ai_result = get_ai_analysis(message)
+    if ai_result.get("purpose") and ai_result.get("purpose") != "General transaction":
+        purpose = ai_result["purpose"]
 
     location = extract_value(message, ["Location"])
 
@@ -389,7 +394,4 @@ ensure_database()
 if __name__ == "__main__":
     ensure_database()
     app.run(debug=True)
-
-
-
 
