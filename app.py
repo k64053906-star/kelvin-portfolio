@@ -1,4 +1,4 @@
-﻿from flask import Flask, request, render_template
+from flask import Flask, request, render_template
 import sqlite3
 import re
 from ai_engine import get_ai_analysis
@@ -340,10 +340,7 @@ def analyze():
     ai_result = get_ai_analysis(message)
 
     # Use AI purpose when local engine cannot identify one
-    if (
-        result.get("purpose") == "General transaction"
-        and ai_result.get("purpose")
-    ):
+    if ai_result.get("purpose") and ai_result.get("purpose") != "General transaction":
         result["purpose"] = ai_result["purpose"]
 
     result["ai_explanation"] = ai_result.get(
@@ -494,3 +491,5 @@ if __name__ == "__main__":
     app.run(
         debug=True
     )
+
+
