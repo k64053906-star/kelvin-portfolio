@@ -1,110 +1,187 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kelvin | Python & AI Developer</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#f5f7fb;color:#172033;line-height:1.6}
-nav{height:72px;background:#fff;border-bottom:1px solid #e5e9f0;display:flex;align-items:center;justify-content:space-between;padding:0 7%}
-.logo{font-size:21px;font-weight:800}
-.nav-link{color:#52637a;text-decoration:none;font-size:14px}
-.hero{padding:100px 7% 80px;max-width:1150px;margin:auto}
-.eyebrow{font-size:12px;font-weight:800;letter-spacing:2px;color:#64748b;margin-bottom:15px}
-h1{font-size:clamp(42px,7vw,76px);line-height:1;letter-spacing:-3px;max-width:850px;margin-bottom:25px}
-.hero p{font-size:19px;color:#64748b;max-width:720px;margin-bottom:30px}
-.button{display:inline-block;background:#172033;color:#fff;text-decoration:none;padding:14px 22px;border-radius:9px;font-weight:700}
-section{max-width:1150px;margin:auto;padding:65px 7%}
-.section-title{font-size:34px;margin-bottom:10px}
-.section-text{color:#64748b;margin-bottom:35px}
-.projects{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-.card{background:#fff;border:1px solid #e4e8ef;border-radius:17px;padding:28px;box-shadow:0 8px 25px rgba(20,30,50,.05);display:flex;flex-direction:column;min-height:330px}
-.number{font-size:12px;font-weight:800;color:#64748b;letter-spacing:1px}
-.card h3{font-size:23px;margin:15px 0 10px}
-.card p{color:#64748b;font-size:14px;flex:1}
-.tags{display:flex;flex-wrap:wrap;gap:7px;margin:20px 0}
-.tag{font-size:11px;padding:5px 9px;border-radius:20px;background:#eef2f7;color:#52637a}
-.demo{display:inline-block;text-align:center;text-decoration:none;background:#172033;color:#fff;padding:11px;border-radius:8px;font-size:13px;font-weight:700}
-.about{background:#fff;border-top:1px solid #e5e9f0;border-bottom:1px solid #e5e9f0}
-.skills{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-top:25px}
-.skill{padding:20px;border:1px solid #e4e8ef;border-radius:12px;background:#f8fafc;font-weight:700}
-.contact{text-align:center}
-footer{text-align:center;padding:30px;color:#718096;font-size:13px;background:#fff;border-top:1px solid #e5e9f0}
-@media(max-width:850px){.projects{grid-template-columns:1fr}.skills{grid-template-columns:repeat(2,1fr)}h1{letter-spacing:-2px}}
-@media(max-width:500px){.skills{grid-template-columns:1fr}nav{padding:0 5%}.hero,section{padding-left:5%;padding-right:5%}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Transaction Intelligence</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
-<nav>
-<div class="logo">Kelvin</div>
-<a class="nav-link" href="#projects">Projects</a>
-</nav>
+<header class="navbar">
+    <div class="brand">
+        <span class="brand-icon">AI</span>
+        <span>Transaction Intelligence</span>
+    </div>
 
-<header class="hero">
-<p class="eyebrow">PYTHON • AI • WEB DEVELOPMENT</p>
-<h1>Building practical digital solutions for businesses.</h1>
-<p>I develop Python and AI-powered web applications that automate tasks, analyze information, and help businesses work more efficiently.</p>
-<a class="button" href="#projects">View My Projects</a>
+    <nav>
+        <a href="/">Analyzer</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/history">History</a>
+    </nav>
 </header>
 
-<section id="projects">
-<p class="eyebrow">SELECTED WORK</p>
-<h2 class="section-title">Featured Projects</h2>
-<p class="section-text">Three practical applications demonstrating Python, AI, automation, databases, and web development.</p>
 
-<div class="projects">
+<main class="container">
 
-<div class="card">
-<span class="number">01</span>
-<h3>AI Transaction Intelligence</h3>
-<p>Analyze transaction information, identify unusual patterns, calculate risk, and provide explainable recommendations through a web dashboard.</p>
-<div class="tags"><span class="tag">Python</span><span class="tag">Flask</span><span class="tag">SQLite</span><span class="tag">AI</span></div>
-<a class="demo" href="https://kelvin-portfolio-4epd.onrender.com" target="_blank">Live Demo</a>
-</div>
+    <section class="hero">
+        <div>
+            <p class="eyebrow">FINANCIAL RISK ANALYSIS</p>
+            <h1>Intelligent Transaction Analysis</h1>
+            <p>
+                Analyze transaction information, identify unusual
+                patterns, calculate risk, and receive an explainable
+                recommendation.
+            </p>
+        </div>
+    </section>
 
-<div class="card">
-<span class="number">02</span>
-<h3>AI Business Document Assistant</h3>
-<p>Upload PDF or TXT business documents, generate summaries, extract key information, and ask questions about document contents.</p>
-<div class="tags"><span class="tag">Python</span><span class="tag">Flask</span><span class="tag">PDF</span><span class="tag">AI</span></div>
-<a class="demo" href="https://ai-business-document-assistant.onrender.com" target="_blank">Live Demo</a>
-</div>
 
-<div class="card">
-<span class="number">03</span>
-<h3>AI Customer Support Assistant</h3>
-<p>Analyze customer messages, detect intent, identify sentiment, and generate relevant support responses automatically.</p>
-<div class="tags"><span class="tag">Python</span><span class="tag">Flask</span><span class="tag">Automation</span><span class="tag">AI</span></div>
-<a class="demo" href="https://ai-customer-support-assistant-7wzn.onrender.com" target="_blank">Live Demo</a>
-</div>
+    <section class="card">
 
-</div>
-</section>
+        <div class="section-title">
+            <div>
+                <h2>Analyze a Transaction</h2>
+                <p>Enter the available transaction information below.</p>
+            </div>
+        </div>
 
-<section class="about">
-<p class="eyebrow">WHAT I BUILD</p>
-<h2 class="section-title">Practical technology for real business needs.</h2>
-<p class="section-text">My projects focus on turning business requirements into usable web applications with clean interfaces and automated workflows.</p>
-<div class="skills">
-<div class="skill">Python Development</div>
-<div class="skill">AI & Automation</div>
-<div class="skill">Flask Web Apps</div>
-<div class="skill">Database Solutions</div>
-</div>
-</section>
+        {% if error %}
+            <div class="alert">
+                {{ error }}
+            </div>
+        {% endif %}
 
-<section class="contact">
-<p class="eyebrow">LET'S WORK TOGETHER</p>
-<h2 class="section-title">Have a project in mind?</h2>
-<p class="section-text">Explore the applications above to see examples of my work and technical capabilities.</p>
-</section>
+        <form action="/analyze" method="POST">
+
+            <textarea
+                name="message"
+                placeholder="Example:
+Amount: 150000 KES
+Type: Online transfer
+Location: Nairobi
+Time: 2:30 AM
+Account age: 2 months
+Previous transactions: 3
+Purpose: Payment for consulting services"
+                required>{{ message if message else "" }}</textarea>
+
+            <button type="submit">
+                Analyze Transaction
+            </button>
+
+        </form>
+
+    </section>
+
+
+    {% if result %}
+
+    <section class="results">
+
+        <div class="result-header">
+            <div>
+                <p class="eyebrow">ANALYSIS RESULT</p>
+                <h2>Transaction Assessment</h2>
+            </div>
+
+            <span class="risk {{ result.risk_level|lower }}">
+                {{ result.risk_level }} Risk
+            </span>
+        </div>
+
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <span>Transaction Type</span>
+                <strong>{{ result.transaction_type }}</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Amount</span>
+                <strong>{{ result.amount }}</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Purpose</span>
+                <strong>{{ result.purpose }}</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Risk Score</span>
+                <strong>{{ result.risk_score }}</strong>
+            </div>
+
+        </div>
+
+
+        <div class="details-grid">
+
+            <div class="card">
+
+                <h3>Transaction Details</h3>
+
+                <div class="detail">
+                    <span>Location</span>
+                    <strong>{{ result.location }}</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Transaction time</span>
+                    <strong>{{ result.transaction_time }}</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Account age</span>
+                    <strong>{{ result.account_age }}</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Previous transactions</span>
+                    <strong>{{ result.previous_transactions }}</strong>
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Risk Explanation</h3>
+
+                <p class="explanation">
+                    {{ result.risk_explanation }}
+                </p>
+
+                <h3>Unusual Indicators</h3>
+
+                <p>
+                    {{ result.unusual_indicators }}
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="recommendation">
+
+            <h3>Recommendation</h3>
+
+            <p>{{ result.recommendation }}</p>
+
+        </div>
+
+    </section>
+
+    {% endif %}
+
+</main>
 
 <footer>
-Kelvin • Python & AI Developer • Freelance Portfolio
+    <p>AI Transaction Intelligence • Local financial risk analysis system</p>
 </footer>
 
 </body>
 </html>
-

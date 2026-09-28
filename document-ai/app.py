@@ -1,4 +1,4 @@
-﻿from flask import Flask, render_template, request
+from flask import Flask, render_template, request
 import os
 import re
 from werkzeug.utils import secure_filename
@@ -151,4 +151,4 @@ def health():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(port=5001, debug=True)

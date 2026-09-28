@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+﻿from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 import re
 from datetime import datetime
@@ -94,6 +94,14 @@ def analyze_transaction(message):
         )
         if money_match:
             amount = float(money_match.group(1).replace(",", ""))
+        else:
+            reverse_money_match = re.search(
+                r"([\d,]+(?:\.\d+)?)\s*(?:KES|KSh|USD|\$)",
+                message,
+                re.IGNORECASE
+            )
+            if reverse_money_match:
+                amount = float(reverse_money_match.group(1).replace(",", ""))
 
     currency = extract_value(message, ["Currency"])
 
@@ -108,6 +116,15 @@ def analyze_transaction(message):
         ["Type", "Transaction type", "Transaction Type"]
     )
 
+    if transaction_type == "Not specified":
+        type_match = re.search(
+            r"\b(online\s+transfer|bank\s+transfer|mobile\s+transfer|transfer|withdrawal|deposit|payment|purchase)\b",
+            message,
+            re.IGNORECASE
+        )
+        if type_match:
+            transaction_type = type_match.group(1).title()
+
     purpose = extract_value(message, ["Purpose"])
 
     ai_result = get_ai_analysis(message)
@@ -116,10 +133,28 @@ def analyze_transaction(message):
 
     location = extract_value(message, ["Location"])
 
+    if location == "Not specified":
+        location_match = re.search(
+            r"\bin\s+([A-Za-z][A-Za-z .'-]*?[A-Za-z])(?=\s+at\b|[.,]|$)",
+            message,
+            re.IGNORECASE
+        )
+        if location_match:
+            location = location_match.group(1).strip()
+
     transaction_time = extract_value(
         message,
         ["Time", "Transaction time", "Transaction Time"]
     )
+
+    if transaction_time == "Not specified":
+        natural_time_match = re.search(
+            r"\bat\s+(\d{1,2}(?::\d{2})?\s*(?:AM|PM))\b",
+            message,
+            re.IGNORECASE
+        )
+        if natural_time_match:
+            transaction_time = natural_time_match.group(1)
 
     account_age = extract_value(
         message,
@@ -131,6 +166,56 @@ def analyze_transaction(message):
         ["Previous transactions", "Previous Transactions"]
     )
 
+    # Natural-language fallback parsing
+    natural_amount = re.search(
+        r"\b([\d,]+(?:\.\d+)?)\s*(?:KES|KSh|USD|\$)\b",
+        message,
+        re.IGNORECASE
+    )
+    if natural_amount and amount == 0.0:
+        amount = float(natural_amount.group(1).replace(",", ""))
+
+    if transaction_type == "Not specified":
+        natural_type = re.search(
+            r"\b(online\s+transfer|bank\s+transfer|mobile\s+transfer|transfer|withdrawal|deposit|payment|purchase)\b",
+            message,
+            re.IGNORECASE
+        )
+        if natural_type:
+            transaction_type = natural_type.group(1).title()
+
+    if location == "Not specified":
+        natural_location = re.search(
+            r"\bin\s+([A-Za-z][A-Za-z .'-]*?)(?=\s+at\b|[.,]|$)",
+            message,
+            re.IGNORECASE
+        )
+        if natural_location:
+            location = natural_location.group(1).strip()
+
+    natural_time = re.search(
+        r"\bat\s+(\d{1,2}(?::\d{2})?\s*(?:AM|PM))\b",
+        message,
+        re.IGNORECASE
+    )
+    if natural_time:
+        transaction_time = natural_time.group(1)
+
+    natural_account_age = re.search(
+        r"account\s+age\s*:\s*(\d+\s*(?:day|days|month|months|year|years))",
+        message,
+        re.IGNORECASE
+    )
+    if natural_account_age:
+        account_age = natural_account_age.group(1)
+
+    natural_previous = re.search(
+        r"previous\s+transactions\s*:\s*(\d+)",
+        message,
+        re.IGNORECASE
+    )
+    if natural_previous:
+        previous_transactions = natural_previous.group(1)
     score = 0
     indicators = []
 
@@ -393,5 +478,5 @@ ensure_database()
 
 if __name__ == "__main__":
     ensure_database()
-    app.run(debug=True)
+    app.run(port=5002, debug=True)
 
